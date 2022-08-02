@@ -1,0 +1,16 @@
+{% extends 'layout.html' %} 
+
+{% block head %} 
+<title>Logout</title>
+{% endblock %} 
+
+
+{% block body %} 
+<form action="{% url 'core:user_logout' %}" method="post">
+    {% csrf_token %}
+    <h2>Are you sure you want to logout?</h2><br/>
+    <a href="{% url 'core:index' %}"><button type="button">No take me back!</button></a>
+    <button type="submit">Yes! Log me out!</button>
+    
+</form>
+{% endblock %} 

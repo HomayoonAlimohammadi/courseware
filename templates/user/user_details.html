@@ -1,0 +1,14 @@
+{% extends 'layout.html' %} 
+
+{% block head %} 
+<title>Profile</title>
+{% endblock %} 
+
+{% block body %} 
+<p>
+    <b>Username: </b> {{ user.username }}
+</p>
+<p>
+    <b>Email: </b> {{ user.email }}
+</p>
+{% endblock %} 
