@@ -1,0 +1,20 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+
+{% block head %} 
+<title>Update</title>
+{% endblock %} 
+
+
+{% block body %} 
+<form action="{% url 'core:course_update' course.course_number %}" method="post">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <button type="submit">Update</button>
+    <a href="{% url 'core:course_details' course.course_number %}">
+        <button type="button">Back to Course</button>
+    </a>
+</form>
+{% endblock %} 

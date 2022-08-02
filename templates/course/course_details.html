@@ -1,0 +1,42 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+
+{% block head %} 
+<title>Course #{{ course.course_number }}</title>
+{% endblock %} 
+
+{% block body %} 
+<p>
+    <b>Course Name: </b> {{ course.name }}
+</p>
+<p>
+    <b>Course Number: </b> {{ course.course_number}}
+</p>
+<p>
+    <b>Group Number: </b> {{ course.group_number}}
+</p>
+<p>
+    <b>Department: </b> {{ course.department }}
+</p>
+<p>
+    <b>Course Days: </b> {{ course.first_day}} - {{ course.second_day }}
+</p>
+<p>
+    <b>Course Time: </b> {{ course.start_time }} - {{ course.end_time }}
+</p>
+<p>
+    <b>Teacher: </b> {{ course.teacher}}
+</p>
+
+{% if request.user.is_authenticated %} 
+    {% if request.user == course.user %} 
+        <a href="{% url 'core:course_update' course.course_number %}">
+            <button type="button">
+                Update Information
+            </button>
+        </a>
+    {% endif %} 
+{% endif %}
+{% endblock %} 
