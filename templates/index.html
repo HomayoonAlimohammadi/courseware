@@ -12,8 +12,19 @@
 
 
 {% block body %} 
-<p>
-    This is the Home Page!
-    <br/>
+<p> 
+    <ul>
+        {% for course in courses %} 
+            <li class="course-link">
+                <h4>
+                    <a href="{% url 'core:course_details' course.course_number %}">
+                        {{ course.name }}
+                    </a>
+                </h4>
+            </li>
+        {% empty %} 
+            No Courses available at the moment...
+        {% endfor %} 
+    </ul>
 </p>
 {% endblock %} 

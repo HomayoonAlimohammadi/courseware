@@ -13,4 +13,15 @@ urlpatterns = [
     path("users/logout", views.user_logout_view, name="user_logout"),
     path("users/<str:username>", views.user_details_view, name="user_details"),
     path("users/<str:username>/update", views.user_update_view, name="user_update"),
+    ####
+    path("courses/", views.index_view, name="course_list"),
+    path("courses/create", views.course_create_view, name="course_create"),
+    path(
+        "courses/<int:course_number>/", views.course_details_view, name="course_details"
+    ),
+    path(
+        "courses/<int:course_number>/update",
+        views.course_update_view,
+        name="course_update",
+    ),
 ]

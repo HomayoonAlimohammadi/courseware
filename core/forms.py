@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django import forms
+from core.models import Course
 
 
 User = get_user_model()
@@ -53,3 +54,21 @@ class ContactUsForm(forms.Form):
     title = forms.CharField(max_length=128)
     email = forms.EmailField()
     text = forms.CharField(widget=forms.Textarea(), required=False)
+
+
+class CourseCreateForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        exclude = ["user"]
+
+
+class CourseUpdateForm(forms.Form):
+    name = forms.CharField(max_length=128)
+    department = forms.CharField(max_length=128)
+    course_number = forms.IntegerField()
+    group_number = forms.IntegerField()
+    teacher = forms.CharField(max_length=128)
+    start_time = forms.TimeField()
+    end_time = forms.TimeField()
+    first_day = forms.CharField(max_length=32)
+    second_day = forms.CharField(max_length=32)

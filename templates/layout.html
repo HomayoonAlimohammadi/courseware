@@ -32,6 +32,11 @@
                     <a href="{% url 'core:user_details' request.user.username %}">
                         <button type="button">Profile</button>
                     </a>
+                    {% if request.user.is_superuser %} 
+                        <a href="{% url 'core:course_create' %}">
+                            <button type="button">Create Course</button>
+                        </a>
+                    {% endif %}
                     <a href="{% url 'core:user_logout' %}">
                         <button type="button">Logout</button>
                     </a>
