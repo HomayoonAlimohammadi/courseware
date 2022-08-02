@@ -1,0 +1,20 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+
+{% block head %} 
+<title>Update</title>
+{% endblock %} 
+
+
+{% block body %} 
+<form action="{% url 'core:user_update' request.user.username %}" method="post">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <button type="submit">Update</button>
+    <a href="{% url 'core:user_details' request.user.username %}">
+        <button type="button">Back to profile</button>
+    </a>
+</form>
+{% endblock %} 

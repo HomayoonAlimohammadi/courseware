@@ -1,0 +1,22 @@
+a, b, h1, h2, h3 {
+    color: orange !important;
+    text-decoration: none !important;
+    
+}
+a:hover {
+    color: orangered !important
+}
+
+body, html {
+    height: 100%;
+}
+
+body {
+    background-image: url("background.jpg");
+}
+button {
+    border-radius: 10px !important
+}
+input {
+    border-radius: 10px;
+}

@@ -1,14 +1,43 @@
 {% extends 'layout.html' %} 
 
+{% load static %} 
+
+
 {% block head %} 
 <title>Profile</title>
 {% endblock %} 
 
 {% block body %} 
 <p>
+    <b>First Name: </b> 
+    {% if user.first_name %}
+        {{ user.first_name }}
+    {% else %} 
+        ---
+    {% endif %}
+</p>
+<p>
+    <b>Last Name: </b>
+    {% if user.last_name %}
+        {{ user.last_name }}
+    {% else %} 
+        ---
+    {% endif %}
+</p>
+
+<p>
     <b>Username: </b> {{ user.username }}
 </p>
 <p>
     <b>Email: </b> {{ user.email }}
 </p>
+{% if request.user.is_authenticated %} 
+    {% if request.user == user %} 
+        <a href="{% url 'core:user_update' user.username %}">
+            <button type="button">
+                Update Information
+            </button>
+        </a>
+    {% endif %} 
+{% endif %}
 {% endblock %} 

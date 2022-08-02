@@ -1,0 +1,23 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+
+{% block head %}
+<title>Users</title>
+{% endblock %}
+
+{% block body %} 
+<ul>
+    {% for user in users %} 
+        <li class="user-link">
+            <h4>
+                <a href="{% url 'core:user_details' user.username %}">
+                    {{ user.username }}
+                </a>
+            </h4>
+        </li>
+    {% endfor %} 
+</ul>
+
+{% endblock %} 
