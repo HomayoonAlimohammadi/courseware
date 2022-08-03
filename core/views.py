@@ -6,20 +6,18 @@ from core.forms import (
     ContactUsForm,
     DepartmentCreateForm,
     DepartmentUpdateForm,
-    TeacherUpdateForm,
     UserCreateForm,
     UserLoginForm,
     UserUpdateForm,
     CourseCreateForm,
     CourseUpdateForm,
-    TeacherCreateForm,
 )
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from core.utils import send_email_to_support, ContactSupportException
-from core.models import Course, Department, Teacher, User
+from core.models import Course, Department, User
 from django.db.models import Q
 
 
@@ -68,11 +66,11 @@ def contact_us_view(request):
 @require_http_methods(["GET"])
 def user_list_view(request):
     q = request.GET.get("q", "")
-    admin_users = User.objects.filter(is_superuser=True, username__icontains=q).all()
-    normal_users = User.objects.filter(is_superuser=False, username__icontains=q).all()
+    teacher_users = User.objects.filter(is_staff=True, username__icontains=q).all()
+    student_users = User.objects.filter(is_staff=False, username__icontains=q).all()
     context = {
-        "admin_users": admin_users,
-        "normal_users": normal_users,
+        "teacher_users": teacher_users,
+        "student_users": student_users,
     }
     return render(request, "user/user_list.html", context=context)
 
@@ -122,7 +120,9 @@ def user_create_view(request):
     if request.method == "POST":
         if form.is_valid():
             password = form.cleaned_data.get("password")
+            title = request.POST.get("title")
             user = form.save()
+            user.is_staff = title == "Teacher"
             user.set_password(password)
             user.save()
             login(request, user)
@@ -156,11 +156,14 @@ def user_update_view(request, username: str):
             password = form.cleaned_data.get("password")
             confirm_password = form.cleaned_data.get("confirm_password")
             image = form.cleaned_data.get("image")
-            print(image)
+            bio = form.cleaned_data.get("bio")
+            gender = request.POST.get("gender")
             user.first_name = first_name
             user.last_name = last_name
             user.email = email
             user.image = image
+            user.bio = bio
+            user.gender = gender
             if password != confirm_password:
                 messages.add_message(request, messages.ERROR, "Passwords do not match.")
                 return redirect("core:user_detalis", username=user.username)
@@ -181,6 +184,8 @@ def user_update_view(request, username: str):
         "last_name": user.last_name,  # type: ignore
         "email": user.email,  # type: ignore
         "username": user.username,  # type: ignore
+        "bio": user.bio,
+        "gender": user.gender,
     }
     form = UserUpdateForm(initial=initial_data)
     context = {"form": form}
@@ -199,23 +204,28 @@ def course_create_view(request):
         if form.is_valid():
             first_day = request.POST.get("first_day")
             second_day = request.POST.get("second_day")
+            teacher = form.cleaned_data.get("teacher")
+            if not teacher.is_staff:  # type: ignore
+                messages.add_message(request, messages.ERROR, "Teacher is invalid.")
+                return redirect("core:course_create")
             if first_day.lower() == second_day.lower():
                 messages.add_message(
                     request,
                     messages.ERROR,
                     "Course should be held in two different days.",
                 )
-            else:
-                course = Course.objects.create(
-                    **form.cleaned_data,
-                    first_day=first_day,
-                    second_day=second_day,
-                    user=request.user,
-                )
-                messages.add_message(
-                    request, messages.SUCCESS, f"Course `{course.name}` was added."
-                )
-                return redirect("core:index")
+                return redirect("core:course_create")
+
+            course = Course.objects.create(
+                **form.cleaned_data,
+                first_day=first_day,
+                second_day=second_day,
+                user=request.user,
+            )
+            messages.add_message(
+                request, messages.SUCCESS, f"Course `{course.name}` was added."
+            )
+            return redirect("core:index")
         else:
             messages.add_message(request, messages.ERROR, form.errors.as_text())
 
@@ -254,7 +264,10 @@ def course_update_view(request, course_number: int):
             course.department = department
             course.course_number = course_number
             course.group_number = group_number
-            course.teacher = teacher
+            if teacher and not teacher.is_staff:
+                messages.add_message(request, messages.ERROR, "Teacher is not valid.")
+            else:
+                course.teacher = teacher
             course.start_time = start_time
             course.end_time = end_time
             course.first_day = first_day
@@ -285,8 +298,10 @@ def course_update_view(request, course_number: int):
 def course_add_user_view(request, course_number: int):
     course = get_object_or_404(Course, course_number=course_number)
     user = request.user
-    if user.is_superuser:
-        messages.add_message(request, messages.ERROR, "Admins can not take courses.")
+    if user.is_superuser or user.is_staff:
+        messages.add_message(
+            request, messages.ERROR, "Admins and Teachers can not take courses."
+        )
         return redirect("core:course_details", course_number=course_number)
     if course not in user.participated_courses.all():
         course.participants.add(user)
@@ -391,65 +406,10 @@ def department_update_view(request, department_number: int):
 @require_http_methods(["GET"])
 def teacher_list_view(request):
     q = request.GET.get("q", "")
-    teachers = Teacher.objects.filter(
-        Q(first_name__icontains=q) | Q(last_name__icontains=q)
-    ).order_by("last_name")
+    teachers = (
+        User.objects.filter(Q(first_name__icontains=q) | Q(last_name__icontains=q))
+        .filter(is_staff=True)
+        .order_by("last_name")
+    )
     context = {"teachers": teachers}
     return render(request, "teacher/teacher_list.html", context)
-
-
-@login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
-@require_http_methods(["GET", "POST"])
-def teacher_create_view(request):
-    form = TeacherCreateForm(request.POST or None)
-    context = {"form": form}
-    if request.method == "POST":
-        if form.is_valid():
-            teacher = form.save()
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                f"Teacher {teacher.last_name} was added successfully",
-            )
-            return redirect("core:teacher_list")
-        else:
-            messages.add_message(request, messages.ERROR, form.errors.as_text())
-
-    return render(request, "teacher/teacher_create.html", context=context)
-
-
-@require_http_methods(["GET"])
-def teacher_details_view(request, pk: int):
-    teacher = get_object_or_404(Teacher, pk=pk)
-    context = {"teacher": teacher}
-    return render(request, "teacher/teacher_details.html", context=context)
-
-
-@login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
-@require_http_methods(["GET", "POST"])
-def teacher_update_view(request, pk: int):
-    teacher = get_object_or_404(Teacher, pk=pk)
-    form = TeacherUpdateForm(request.POST or None)
-    if request.method == "POST":
-        if form.is_valid():
-            first_name = form.cleaned_data.get("first_name")
-            last_name = form.cleaned_data.get("last_name")
-            teacher.first_name = first_name
-            teacher.last_name = last_name
-            try:
-                teacher.save()
-            except Exception as e:
-                print(e.__class__)
-                print(e)
-                messages.add_message(request, messages.ERROR, "Invalid data.")
-            return redirect("core:teacher_details", pk=pk)
-        else:
-            messages.add_message(request, messages.ERROR, form.errors.as_text())
-
-    initial_data = {
-        "first_name": teacher.first_name,
-        "last_name": teacher.last_name,
-    }
-    form = TeacherUpdateForm(initial=initial_data)
-    context = {"form": form, "teacher": teacher}
-    return render(request, "teacher/teacher_update.html", context=context)

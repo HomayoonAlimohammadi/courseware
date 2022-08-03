@@ -16,10 +16,10 @@
     </form>
 </div>
 <hr>
-<h2>Admins:</h2>
+<h2>Teachers:</h2>
 <div>
     <ul>
-        {% for user in admin_users %} 
+        {% for user in teacher_users %} 
             <li class="user-link">
                 <h5>
                     <a href="{% url 'core:user_details' user.username %}">
@@ -28,15 +28,15 @@
                 </h5>
             </li>
         {% empty %} 
-            <li>No Admins at the moment...</li>
+            <li>No Teachers at the moment...</li>
         {% endfor %} 
     </ul>
 </div>
 <hr>
-<h2>Normal Users:</h2>
+<h2>Students:</h2>
 <div>
     <ul>
-        {% for user in normal_users %} 
+        {% for user in student_users %} 
             <li class="user-link">
                 <h5>
                     <a href="{% url 'core:user_details' user.username %}">
@@ -45,7 +45,7 @@
                 </h5>
             </li>
         {% empty %} 
-            <li>No Normal users at the moment...</li>
+            <li>No Students at the moment...</li>
         {% endfor %} 
     </ul>
 </div>

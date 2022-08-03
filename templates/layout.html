@@ -28,7 +28,14 @@
             </div>
             <div id="user-hello">
                 {% if request.user.is_authenticated %} 
-                    <b>Hello {{ request.user.username }}</b><br/><br/>
+                    <b>Hello {{ request.user.username|title }},</b><br/>
+                    {% if request.user.is_staff %} 
+                        <b>You are signed in as a Teacher.</b>
+                    {% else %}
+                        <b>You are signed in as a Student.</b>
+                    {% endif %} 
+                    <b></b>
+                    <br/><br/>
                     <a href="{% url 'core:user_details' request.user.username %}">
                         <button type="button">Profile</button>
                     </a>
@@ -38,9 +45,6 @@
                         </a>
                         <a href="{% url 'core:department_create' %}">
                             <button type="button">Create Department</button>
-                        </a>
-                        <a href="{% url 'core:teacher_create' %}">
-                            <button type="button">Create Teacher</button>
                         </a>
                     {% endif %}
                     <a href="{% url 'core:user_logout' %}">
@@ -64,9 +68,6 @@
                 </a>
                 <a href="{% url 'core:department_list' %}">
                     <button type="button">Departments</button>
-                </a>
-                <a href="{% url 'core:teacher_list' %}">
-                    <button type="button">Teachers</button>
                 </a>
             </div>
             <hr>

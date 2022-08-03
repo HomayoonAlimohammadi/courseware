@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django import forms
-from core.models import Course, Department, Teacher, User
+from core.models import Course, Department, User
 
 
 class UserCreateForm(forms.ModelForm):
@@ -58,8 +58,8 @@ class UserCreateForm(forms.ModelForm):
 class UserUpdateForm(forms.Form):
     first_name = forms.CharField(max_length=128, required=False)
     last_name = forms.CharField(max_length=128, required=False)
-    username = forms.CharField(max_length=128)
     email = forms.EmailField()
+    bio = forms.CharField(widget=forms.Textarea(), required=False)
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
     image = forms.ImageField(required=False)
@@ -71,18 +71,6 @@ class UserUpdateForm(forms.Form):
         confirm_password = cleaned_data.get("confirm_password")  # type: ignore
         if password != confirm_password:
             raise forms.ValidationError("password and confirm_password does not match")
-
-    # def clean_username(self):
-    #     username = self.cleaned_data["username"]
-    #     try:
-    #         User._default_manager.get(username=username)
-
-    #         raise forms.ValidationError(
-    #             self.error_messages["duplicate_username"],
-    #             code="duplicate_username",
-    #         )
-    #     except User.DoesNotExist:
-    #         return username
 
 
 class UserLoginForm(forms.Form):
@@ -137,14 +125,3 @@ class DepartmentUpdateForm(forms.Form):
     name = forms.CharField(max_length=128)
     description = forms.CharField(widget=forms.Textarea(), required=False)
     department_number = forms.IntegerField()
-
-
-class TeacherUpdateForm(forms.Form):
-    first_name = forms.CharField(max_length=128)
-    last_name = forms.CharField(max_length=128)
-
-
-class TeacherCreateForm(forms.ModelForm):
-    class Meta:
-        model = Teacher
-        fields = ["first_name", "last_name"]

@@ -32,8 +32,8 @@
 </p>
 <p>
     <b>Teacher: </b> 
-    <a href="{% url 'core:teacher_details' course.teacher.pk %}">
-        {{ course.teacher}}
+    <a href="{% url 'core:user_details' course.teacher.username %}">
+        {{ course.teacher.username }}
     </a>
 </p>
 

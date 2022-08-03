@@ -44,9 +44,4 @@ urlpatterns = [
         views.department_update_view,
         name="department_update",
     ),
-    #### Teachers
-    path("teachers/", views.teacher_list_view, name="teacher_list"),
-    path("teachers/create", views.teacher_create_view, name="teacher_create"),
-    path("teachers/<int:pk>/", views.teacher_details_view, name="teacher_details"),
-    path("teachers/<int:pk>/update", views.teacher_update_view, name="teacher_update"),
 ]

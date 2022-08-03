@@ -52,8 +52,23 @@
     <b>Username: </b> {{ user.username }}
 </p>
 <p>
+    <b>Role: </b>
+    {% if user.is_staff %} 
+    Teacher 
+    {% else %} 
+    Student
+    {% endif %} 
+</p>
+<p>
     <b>Email: </b> {{ user.email }}
 </p>
+<p>
+    <b>Bio: </b> {{ user.bio }}
+</p>
+<p>
+    <b>Gender: </b> {{ user.gender }}
+</p>
+
 {% if request.user.is_authenticated %} 
     {% if request.user == user %} 
         <a href="{% url 'core:user_update' user.username %}">
@@ -62,11 +77,11 @@
             </button>
         </a>
     {% endif %} 
-    {% if not request.user.is_superuser %} 
+    {% if not user.is_staff %} 
     <br/><br/><br/>
     <h3>Participates in:</h3>
         <ul>
-            {% for course in request.user.participated_courses.all %} 
+            {% for course in user.participated_courses.all %} 
                 <a href="{% url 'core:course_details' course.course_number %}">
                     <h5><li>{{ course.name }}</li></h5>
                 </a>
@@ -74,6 +89,21 @@
                 <li>No courses have been added yet.</li>
             {% endfor %} 
         </ul>
+    {% else %}
+    <h3>Courses:</h3>
+    <ul>
+        {% for course in user.courses.all %} 
+            <h5>
+                <li>
+                    <a href="{% url 'core:course_details' course.course_number %}">
+                        {{ course.name }}
+                    </a>
+                </li>
+            </h5>
+        {% empty %} 
+            <li>No Course from this Teacher is available.</li>
+        {% endfor %} 
+    </ul>
     {% endif %} 
 {% endif %}
 {% endblock %} 

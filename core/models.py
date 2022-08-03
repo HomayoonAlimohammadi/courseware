@@ -8,6 +8,8 @@ from core.utils import uuid_namer
 
 class User(AbstractUser):
     image = models.ImageField(blank=True, null=True, upload_to=uuid_namer)
+    bio = models.CharField(blank=True, null=True, max_length=1024)
+    gender = models.CharField(max_length=16, default="Other")
 
     def __str__(self) -> str:
         return f"User({self.username})"
@@ -28,20 +30,19 @@ class Department(models.Model):
         return f"Department({self.name[:5]})"
 
 
-class Teacher(models.Model):
-    first_name = models.CharField(max_length=128)
-    last_name = models.CharField(max_length=128)
+# class Teacher(AbstractUser):
+#     def __str__(self) -> str:
+#         return f"Mr/Ms {self.last_name}"
 
-    def __str__(self) -> str:
-        return f"Mr/Ms {self.last_name}"
-
-    def __repr__(self) -> str:
-        return f"Teacher({self.last_name[:5]})"
+#     def __repr__(self) -> str:
+#         return f"Teacher({self.last_name[:5]})"
 
 
 class Course(models.Model):
     name = models.CharField(max_length=128)
-    user = models.ForeignKey(User, related_name="courses", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name="added_courses", on_delete=models.CASCADE
+    )
     participants = models.ManyToManyField(
         User, related_name="participated_courses", null=True, blank=True
     )
@@ -50,9 +51,7 @@ class Course(models.Model):
     )
     course_number = models.IntegerField(unique=True)
     group_number = models.IntegerField()
-    teacher = models.ForeignKey(
-        Teacher, related_name="courses", on_delete=models.CASCADE
-    )
+    teacher = models.ForeignKey(User, related_name="courses", on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
     first_day = models.CharField(max_length=32)
@@ -60,6 +59,19 @@ class Course(models.Model):
 
     def __str__(self) -> str:
         return f"Course({self.name[:10]}...)"
+
+
+class Interval(models.Model):
+    teacher = models.ForeignKey(
+        User, related_name="intervals", on_delete=models.CASCADE
+    )
+    reserving_students = models.ManyToManyField(User, related_name="reserved_intervals")
+    capacity = models.IntegerField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self) -> str:
+        return f"{self.start_time} - {self.end_time} | {self.capacity}"
 
 
 @receiver(models.signals.post_delete, sender=User)

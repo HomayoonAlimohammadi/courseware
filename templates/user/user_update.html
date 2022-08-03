@@ -13,6 +13,13 @@
 <form action="{% url 'core:user_update' request.user.username %}" method="post" enctype="multipart/form-data">
     {% csrf_token %} 
     {{ form.as_p }}
+    <br/>
+    Gender: <select name="gender">
+        <option>Other</option>
+        <option>Male</option>
+        <option>Female</option>
+    </select>
+    <br/><br/>
     <button type="submit">Update</button>
     <a href="{% url 'core:user_details' request.user.username %}">
         <button type="button">Back to profile</button>
