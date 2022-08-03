@@ -9,6 +9,10 @@ User = get_user_model()
 class UserCreateForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())
+    error_messages = {
+        "duplicate_username": "Your username is already available in the system!",
+        "duplicate_email": "Your Email is already available in the system!",
+    }
 
     class Meta:
         model = User
@@ -27,6 +31,30 @@ class UserCreateForm(forms.ModelForm):
         confirm_password = cleaned_data.get("confirm_password")  # type: ignore
         if password != confirm_password:
             raise forms.ValidationError("Password and Confirmation do not match.")
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        try:
+            User._default_manager.get(username=username)
+
+            raise forms.ValidationError(
+                self.error_messages["duplicate_username"],
+                code="duplicate_username",
+            )
+        except User.DoesNotExist:
+            return username
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        try:
+            User._default_manager.get(email=email)
+
+            raise forms.ValidationError(
+                self.error_messages["duplicate_email"],
+                code="duplicate_email",
+            )
+        except User.DoesNotExist:
+            return email
 
 
 class UserUpdateForm(forms.Form):

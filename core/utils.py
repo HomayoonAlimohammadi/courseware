@@ -4,6 +4,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class ContactSupportException(Exception):
@@ -53,7 +55,7 @@ class EmailSender:
         self.session.quit()
 
 
-def send_email_to_support(
+def send_email_to_support_manual(
     title: str | None,
     text: str | None,
     customer_email: str | None,
@@ -75,4 +77,24 @@ def send_email_to_support(
         email_sender.send_email()
     except Exception as e:
         print(e)
+        raise ContactSupportException
+
+
+def send_email_to_support(
+    subject: str,
+    message: str,
+    recipient: str,
+):
+    subject = subject
+    message = message
+    recipient_list = [recipient]
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=recipient_list,
+        )
+    except Exception as e:
+        print(e)  # This should be replaces with logging system.
         raise ContactSupportException

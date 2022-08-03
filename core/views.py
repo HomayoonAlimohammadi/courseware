@@ -32,16 +32,18 @@ def contact_us_view(request):
     context = {"form": form}
     if request.method == "POST":
         if form.is_valid():
-            title = form.cleaned_data.get("title")
-            text = form.cleaned_data.get("text")
-            customer_email = form.cleaned_data.get("email")
+            title = form.cleaned_data.get("title", "")
+            text = form.cleaned_data.get("text", "")
+            customer_email = form.cleaned_data.get("email", "")
             try:
                 send_email_to_support(
-                    title=title, text=text, customer_email=customer_email
+                    subject=title, message=text, recipient=customer_email
                 )
             except ContactSupportException:
                 messages.add_message(
-                    request, messages.ERROR, "Could not email the support..."
+                    request,
+                    messages.ERROR,
+                    "Could not email the support, This might be due to invalid data or some initial problem.",
                 )
                 return redirect("core:contact_us")
             messages.add_message(
@@ -115,14 +117,7 @@ def user_create_view(request):
             )
             return redirect("core:index")
         else:
-            if "username" in form.errors.as_text():
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    "Your username is already available in the system.",
-                )
-            else:
-                messages.add_message(request, messages.ERROR, form.errors.as_text())
+            messages.add_message(request, messages.ERROR, form.errors.as_text())
 
     return render(request, "user/user_create.html", context=context)
 
