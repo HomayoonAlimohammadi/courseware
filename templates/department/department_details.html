@@ -28,4 +28,28 @@
         {{ department.manager.username }}
     </a>
 </p>
+{% if request.user.is_authenticated %} 
+    {% if request.user == department.manager %} 
+        <a href="{% url 'core:department_update' department.department_number %}">
+            <button type="button">
+                Update Information
+            </button>
+        </a>
+    {% endif %} 
+{% endif %}
+<br/><br/><br/>
+<h3>Courses:</h3>
+<ul>
+    {% for course in department.courses.all %} 
+        <h5>
+            <li>
+                <a href="{% url 'core:course_details' course.course_number %}">
+                    {{ course.name }}
+                </a>
+            </li>
+        </h5>
+    {% empty %} 
+        <li>No course from this department is already available.</li>
+    {% endfor %} 
+</ul>
 {% endblock %} 

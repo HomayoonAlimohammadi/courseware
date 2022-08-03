@@ -33,7 +33,7 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=128)
 
     def __str__(self) -> str:
-        return f"Mr. {self.last_name}"
+        return f"Mr/Ms {self.last_name}"
 
     def __repr__(self) -> str:
         return f"Teacher({self.last_name[:5]})"
@@ -42,6 +42,9 @@ class Teacher(models.Model):
 class Course(models.Model):
     name = models.CharField(max_length=128)
     user = models.ForeignKey(User, related_name="courses", on_delete=models.CASCADE)
+    participants = models.ManyToManyField(
+        User, related_name="participated_courses", null=True, blank=True
+    )
     department = models.ForeignKey(
         Department, related_name="courses", on_delete=models.CASCADE
     )
@@ -85,7 +88,13 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
     except User.DoesNotExist:
         return False
 
-    new_file = instance.image
-    if not old_file == new_file:
-        if os.path.isfile(old_file.path):
-            os.remove(old_file.path)
+    try:
+        new_file = instance.image
+        if not old_file == new_file:
+            if os.path.isfile(old_file.path):
+                os.remove(old_file.path)
+    except Exception as e:
+        # TODO: These two lines should be logged.
+        print(e.__class__)
+        print(e)
+        pass

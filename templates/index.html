@@ -12,16 +12,24 @@
 
 
 {% block body %} 
+<div>
+    <h4>Search in Courses:</h4> 
+    <form action="{% url 'core:course_list' %}" method="get">
+        <input name="q" />
+        <button type="submit">Search</button>
+    </form>
+</div>
+<hr>
 <h2>Courses:</h2>
 <p> 
     <ul>
         {% for course in courses %} 
             <li class="course-link">
-                <h4>
+                <h5>
                     <a href="{% url 'core:course_details' course.course_number %}">
-                        {{ course.name }}
+                        {{ course.name }} ---- {{ course.department.name }} ---- Mr/Ms {{ course.teacher.last_name }} ---- {{ course.first_day }}/{{ course.second_day }} ---- {{ course.start_time}} - {{ course.end_time }} 
                     </a>
-                </h4>
+                </h5>
             </li>
         {% empty %} 
             No Courses available at the moment...

@@ -15,4 +15,8 @@
     {{ form.as_p }}
     <button type="submit">Login</button>
 </form>
+<br/>
+<div>
+    Need a new account? <a href="{% url 'core:user_create' %}">Sign up</a>.
+</div>
 {% endblock %} 

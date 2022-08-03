@@ -6,13 +6,21 @@
 
 
 {% block body %} 
+<div>
+    <h4>Search in Departments:</h4> 
+    <form action="{% url 'core:department_list' %}" method="get">
+        <input name="q" />
+        <button type="submit">Search</button>
+    </form>
+</div>
+<hr>
 <h2>Departments:</h2>
 <div>
     <ul>
-        {% for depratment in departments %} 
-        <a href="{% url 'core:department_details' department.department_number %}">
+        {% for department in departments %} 
+        <h5><a href="{% url 'core:department_details' department.department_number %}">
             <li>{{ department.name }}</li>
-        </a>
+        </a></h5>
         {% empty %}
         <li>No departments at the moment...</li>        
         {% endfor %} 

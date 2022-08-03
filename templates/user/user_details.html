@@ -62,5 +62,18 @@
             </button>
         </a>
     {% endif %} 
+    {% if not request.user.is_superuser %} 
+    <br/><br/><br/>
+    <h3>Participates in:</h3>
+        <ul>
+            {% for course in request.user.participated_courses.all %} 
+                <a href="{% url 'core:course_details' course.course_number %}">
+                    <h5><li>{{ course.name }}</li></h5>
+                </a>
+            {% empty %} 
+                <li>No courses have been added yet.</li>
+            {% endfor %} 
+        </ul>
+    {% endif %} 
 {% endif %}
 {% endblock %} 

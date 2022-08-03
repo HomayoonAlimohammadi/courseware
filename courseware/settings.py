@@ -139,5 +139,6 @@ with open(os.path.join(BASE_DIR, "courseware/credentials.json"), "r") as f:
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = data.get("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = data.get("EMAIL_HOST_PASSWORD")
+    SUPPORT_EMAIL = data.get("SUPPORT_EMAIL")
 
 AUTH_USER_MODEL = "core.User"

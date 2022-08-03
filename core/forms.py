@@ -62,6 +62,8 @@ class UserUpdateForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
+    image = forms.ImageField(required=False)
+    error_messages = {"duplicate_username": "Usernames must be unique."}
 
     def clean(self):
         cleaned_data = super(UserUpdateForm, self).clean()
@@ -69,6 +71,18 @@ class UserUpdateForm(forms.Form):
         confirm_password = cleaned_data.get("confirm_password")  # type: ignore
         if password != confirm_password:
             raise forms.ValidationError("password and confirm_password does not match")
+
+    # def clean_username(self):
+    #     username = self.cleaned_data["username"]
+    #     try:
+    #         User._default_manager.get(username=username)
+
+    #         raise forms.ValidationError(
+    #             self.error_messages["duplicate_username"],
+    #             code="duplicate_username",
+    #         )
+    #     except User.DoesNotExist:
+    #         return username
 
 
 class UserLoginForm(forms.Form):
@@ -88,12 +102,15 @@ class CourseCreateForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        exclude = ["user", "first_day", "second_day"]
+        exclude = ["user", "first_day", "second_day", "participants"]
 
     def clean(self):
         cleaned_data = super(CourseCreateForm, self).clean()
         start_time = cleaned_data.get("start_time")  # type: ignore
         end_time = cleaned_data.get("end_time")  # type: ignore
+        print(start_time, end_time)
+        if not start_time or not end_time:
+            raise forms.ValidationError("Invalid time formats.")
         if start_time >= end_time:  # type: ignore
             raise forms.ValidationError("Course should start before it ends!")
 

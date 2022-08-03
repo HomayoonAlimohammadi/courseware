@@ -6,13 +6,21 @@
 
 
 {% block body %} 
+<div>
+    <h4>Search in Teachers:</h4> 
+    <form action="{% url 'core:teacher_list' %}" method="get">
+        <input name="q" />
+        <button type="submit">Search</button>
+    </form>
+</div>
+<hr>
 <h2>Teachers:</h2>
 <div>
     <ul>
         {% for teacher in teachers %} 
-        <a href="{% url 'core:teacher_details' teacher.pk %}">
-            <li>{{ teacher.name }}</li>
-        </a>
+        <h5><a href="{% url 'core:teacher_details' teacher.pk %}">
+            <li>{{ teacher.first_name }} {{ teacher.last_name }}</li>
+        </a></h5>
         {% empty %}
         <li>No teachers at the moment...</li>        
         {% endfor %} 

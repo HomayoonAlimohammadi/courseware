@@ -84,11 +84,12 @@ def send_email_to_support_manual(
 def send_email_to_support(
     subject: str,
     message: str,
-    recipient: str,
+    customer_email: str,
 ):
     subject = subject
     message = message
-    recipient_list = [recipient]
+    recipient_list = [settings.SUPPORT_EMAIL]
+    subject += f"\nThis Email was sent from {customer_email}."
     try:
         send_mail(
             subject=subject,
@@ -103,4 +104,4 @@ def send_email_to_support(
 
 def uuid_namer(instance, file_name):
     name, ext = file_name.split(".")
-    return name + str(uuid4()) + f".{ext}"
+    return f"{name}_{str(uuid4())}.{ext}"

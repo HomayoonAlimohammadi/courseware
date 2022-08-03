@@ -9,6 +9,31 @@
 {% block body %} 
 <h2>Teacher #{{ teacher.pk }} Details:</h2>
 <p>
-    <b>Name: </b> {{ teacher.name }}
+    <b>First Name: </b> {{ teacher.first_name }}
 </p>
+<p>
+    <b>Last Name: </b> {{ teacher.last_name }}
+</p>
+{% if request.user.is_authenticated %} 
+    <a href="{% url 'core:teacher_update' teacher.pk %}">
+        <button type="button">
+            Update Information
+        </button>
+    </a>
+{% endif %}
+<br/><br/><br/>
+<h3>Courses:</h3>
+<ul>
+    {% for course in teacher.courses.all %} 
+        <h5>
+            <li>
+                <a href="{% url 'core:course_details' course.course_number %}">
+                    {{ course.name }}
+                </a>
+            </li>
+        </h5>
+    {% empty %} 
+        <li>No Course from this teacher is available.</li>
+    {% endfor %} 
+</ul>
 {% endblock %} 

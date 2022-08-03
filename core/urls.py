@@ -4,6 +4,8 @@ from core import views
 
 app_name = "core"
 
+handler404 = "core.views.handle_404_view"
+
 urlpatterns = [
     path("", views.index_view, name="index"),
     path("contact-us", views.contact_us_view, name="contact_us"),
@@ -23,6 +25,11 @@ urlpatterns = [
         "courses/<int:course_number>/update",
         views.course_update_view,
         name="course_update",
+    ),
+    path(
+        "courses/<int:course_number>/add-user",
+        views.course_add_user_view,
+        name="course_add_user",
     ),
     #### Departments
     path("departments/", views.department_list_view, name="department_list"),

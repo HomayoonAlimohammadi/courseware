@@ -19,7 +19,10 @@
     <b>Group Number: </b> {{ course.group_number}}
 </p>
 <p>
-    <b>Department: </b> {{ course.department }}
+    <b>Department: </b>
+    <a href="{% url 'core:department_details' course.department.department_number %}">
+        {{ course.department }}
+    </a>
 </p>
 <p>
     <b>Course Days: </b> {{ course.first_day}} - {{ course.second_day }}
@@ -28,7 +31,10 @@
     <b>Course Time: </b> {{ course.start_time }} - {{ course.end_time }}
 </p>
 <p>
-    <b>Teacher: </b> {{ course.teacher}}
+    <b>Teacher: </b> 
+    <a href="{% url 'core:teacher_details' course.teacher.pk %}">
+        {{ course.teacher}}
+    </a>
 </p>
 
 {% if request.user.is_authenticated %} 
@@ -38,6 +44,25 @@
                 Update Information
             </button>
         </a>
+    {% else %} 
+        <a href="{% url 'core:course_add_user' course.course_number %}">
+            <button type="button">
+                Get Course
+            </button>
+        </a>
     {% endif %} 
 {% endif %}
+<br/><br/><br/>
+<h3>Participants:</h3>
+{% for user in course.participants.all %} 
+    <h5>
+        <li>
+            <a href="{% url 'core:user_details' user.username %}">
+                {{ user.username }}
+            </a>
+        </li>
+    </h5>
+{% empty %} 
+        <li>No one is already participating in this course.</li>
+{% endfor %} 
 {% endblock %} 
