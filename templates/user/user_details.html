@@ -5,9 +5,32 @@
 
 {% block head %} 
 <title>Profile</title>
+<style>
+    img {
+        height: 200px; 
+        width: 200px;
+        border-radius: 50%;
+        border: 5px solid orange
+    }
+    img:hover {
+        border: 10px solid orange
+
+    }
+</style>
 {% endblock %} 
 
 {% block body %} 
+<p>
+    <b>Profile Photo:</b>
+    {% if user.image %} 
+        <div>
+            <img src="{{ user.image.url }}" alt="User Image"/>
+        </div>
+    {% else %}
+        No Image 
+    {% endif %}
+    
+</p>
 <p>
     <b>First Name: </b> 
     {% if user.first_name %}

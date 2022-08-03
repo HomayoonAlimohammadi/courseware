@@ -36,6 +36,12 @@
                         <a href="{% url 'core:course_create' %}">
                             <button type="button">Create Course</button>
                         </a>
+                        <a href="{% url 'core:department_create' %}">
+                            <button type="button">Create Department</button>
+                        </a>
+                        <a href="{% url 'core:teacher_create' %}">
+                            <button type="button">Create Teacher</button>
+                        </a>
                     {% endif %}
                     <a href="{% url 'core:user_logout' %}">
                         <button type="button">Logout</button>
@@ -49,8 +55,18 @@
                         <button type="button">Register</button>
                     </a>
                 {% endif %} 
+                <br/><br/>
+                <a href="{% url 'core:course_list' %}">
+                    <button type="button">Courses</button>
+                </a>
                 <a href="{% url 'core:user_list' %}">
                     <button type="button">Users</button>
+                </a>
+                <a href="{% url 'core:department_list' %}">
+                    <button type="button">Departments</button>
+                </a>
+                <a href="{% url 'core:teacher_list' %}">
+                    <button type="button">Teachers</button>
                 </a>
             </div>
             <hr>

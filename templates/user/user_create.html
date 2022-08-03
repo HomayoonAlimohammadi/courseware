@@ -8,12 +8,13 @@
 {% endblock %} 
 
 {% block body %} 
-<form action="{% url 'core:user_create' %}" method="post">
+<h2>Create User:</h2>
+<form action="{% url 'core:user_create' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %} 
     {{ form.as_p }} 
     <button type="submit">Register</button>
 </form>
 <p>
-    <!-- Already have an account? <a href="{% url 'core:user_login' %}">Login</a>. -->
+    Already have an account? <a href="{% url 'core:user_login' %}">Login</a>.
 </p>
 {% endblock %} 

@@ -1,0 +1,14 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+{% block head %} 
+<title>Teacher #{{ teacher.pk }}</title>
+{% endblock %} 
+
+{% block body %} 
+<h2>Teacher #{{ teacher.pk }} Details:</h2>
+<p>
+    <b>Name: </b> {{ teacher.name }}
+</p>
+{% endblock %} 

@@ -1,0 +1,19 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+
+{% block head %} 
+<title>Department Creation</title>
+{% endblock %} 
+
+{% block body %} 
+<h2>Create Department</h2>
+<form action="{% url 'core:department_create' %}" method="post">
+    {% csrf_token %} 
+    {{ form.as_p }} 
+    <button type="submit">Create</button>
+</form>
+<p>
+</p>
+{% endblock %} 

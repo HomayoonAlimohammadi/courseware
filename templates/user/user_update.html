@@ -9,6 +9,7 @@
 
 
 {% block body %} 
+<h2>Register</h2>
 <form action="{% url 'core:user_update' request.user.username %}" method="post">
     {% csrf_token %} 
     {{ form.as_p }}

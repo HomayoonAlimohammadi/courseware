@@ -1,0 +1,21 @@
+{% extends 'layout.html' %} 
+
+{% block head %} 
+<title>Departments</title>
+{% endblock %} 
+
+
+{% block body %} 
+<h2>Departments:</h2>
+<div>
+    <ul>
+        {% for depratment in departments %} 
+        <a href="{% url 'core:department_details' department.department_number %}">
+            <li>{{ department.name }}</li>
+        </a>
+        {% empty %}
+        <li>No departments at the moment...</li>        
+        {% endfor %} 
+    </ul>
+</div>
+{% endblock %} 

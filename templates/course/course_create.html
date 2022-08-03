@@ -8,12 +8,31 @@
 {% endblock %} 
 
 {% block body %} 
+<h2>Create Course:</h2>
 <form action="{% url 'core:course_create' %}" method="post">
     {% csrf_token %} 
     {{ form.as_p }} 
+    First Day: <select name="first_day">
+        <option>Monday</option>
+        <option>Teusday</option>
+        <option>Wendesday</option>
+        <option>Thursday</option>
+        <option>Friday</option>
+        <option>Saturday</option>
+        <option>Sunday</option>  
+    </select>&emsp;
+
+    Second Day: <select name="second_day">
+        <option>Monday</option>
+        <option>Teusday</option>
+        <option>Wendesday</option>
+        <option>Thursday</option>
+        <option>Friday</option>
+        <option>Saturday</option>
+        <option>Sunday</option>
+    </select><br/><br/>
     <button type="submit">Create</button>
 </form>
 <p>
-    <!-- Already have an account? <a href="{% url 'core:user_login' %}">Login</a>. -->
 </p>
 {% endblock %} 

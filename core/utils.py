@@ -6,6 +6,7 @@ from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
 from django.core.mail import send_mail
 from django.conf import settings
+from uuid import uuid4
 
 
 class ContactSupportException(Exception):
@@ -98,3 +99,8 @@ def send_email_to_support(
     except Exception as e:
         print(e)  # This should be replaces with logging system.
         raise ContactSupportException
+
+
+def uuid_namer(instance, file_name):
+    name, ext = file_name.split(".")
+    return name + str(uuid4()) + f".{ext}"

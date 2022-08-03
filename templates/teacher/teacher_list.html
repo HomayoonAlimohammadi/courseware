@@ -1,0 +1,21 @@
+{% extends 'layout.html' %} 
+
+{% block head %} 
+<title>Teachers</title>
+{% endblock %} 
+
+
+{% block body %} 
+<h2>Teachers:</h2>
+<div>
+    <ul>
+        {% for teacher in teachers %} 
+        <a href="{% url 'core:teacher_details' teacher.pk %}">
+            <li>{{ teacher.name }}</li>
+        </a>
+        {% empty %}
+        <li>No teachers at the moment...</li>        
+        {% endfor %} 
+    </ul>
+</div>
+{% endblock %} 

@@ -1,23 +1,23 @@
 from __future__ import annotations
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from core.forms import (
     ContactUsForm,
+    DepartmentCreateForm,
     UserCreateForm,
     UserLoginForm,
     UserUpdateForm,
     CourseCreateForm,
     CourseUpdateForm,
+    TeacherCreateForm,
 )
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from core.utils import send_email_to_support, ContactSupportException
-from core.models import Course
-
-
-User = get_user_model()
+from core.models import Course, Department, Teacher, User
 
 
 @require_http_methods(["GET"])
@@ -57,8 +57,12 @@ def contact_us_view(request):
 
 @require_http_methods(["GET"])
 def user_list_view(request):
-    users = User.objects.all()
-    context = {"users": users}
+    admin_users = User.objects.filter(is_superuser=True).all()
+    normal_users = User.objects.filter(is_superuser=False).all()
+    context = {
+        "admin_users": admin_users,
+        "normal_users": normal_users,
+    }
     return render(request, "user/user_list.html", context=context)
 
 
@@ -101,7 +105,7 @@ def user_logout_view(request):
 
 @require_http_methods(["GET", "POST"])
 def user_create_view(request):
-    form = UserCreateForm(request.POST or None)
+    form = UserCreateForm(request.POST, request.FILES or None)
     context = {"form": form}
     if request.method == "POST":
         if form.is_valid():
@@ -167,7 +171,14 @@ def course_create_view(request):
     context = {"form": form}
     if request.method == "POST":
         if form.is_valid():
-            course = Course.objects.create(**form.cleaned_data, user=request.user)
+            first_day = request.POST.get("first_day")
+            second_day = request.POST.get("second_day")
+            course = Course.objects.create(
+                **form.cleaned_data,
+                first_day=first_day,
+                second_day=second_day,
+                user=request.user,
+            )
             messages.add_message(
                 request, messages.SUCCESS, f"Course `{course.name[:10]}` was added."
             )
@@ -231,3 +242,82 @@ def course_update_view(request, course_number: int):
     form = CourseUpdateForm(initial=initial_data)
     context = {"form": form}
     return render(request, "course/course_update.html", context=context)
+
+
+def department_list_view(request):
+    departments = Department.objects.all()
+    context = {"departments": departments}
+    return render(request, "department/department_list.html", context=context)
+
+
+def department_details_view(request, department_number: int):
+    department = get_object_or_404(Department, department_number=department_number)
+    context = {"department": department}
+    return render(request, "department/department_details.html", context=context)
+
+
+@login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
+def department_create_view(request):
+    form = DepartmentCreateForm(request.POST or None)
+    context = {"form": form}
+    if request.method == "POST":
+        if not request.user.is_superuser:
+            messages.add_message(
+                request, messages.ERROR, "Only Admins can create a department"
+            )
+            return redirect("core:index")
+        if form.is_valid():
+            department = Department.objects.create(
+                **form.cleaned_data, manager=request.user
+            )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                f"Department `{department.name}` was added successfully.",
+            )
+            return redirect(
+                "core:department_details",
+                department_number=department.department_number,
+            )
+        else:
+            messages.add_message(request, messages.ERROR, form.errors.as_text())
+
+    return render(request, "department/department_create.html", context=context)
+
+
+def department_update_view(request, department_number: int):
+    return HttpResponse("Not Implemented yet...")
+
+
+def teacher_list_view(request):
+    teachers = Teacher.objects.order_by("name").all()
+    context = {"teachers": teachers}
+    return render(request, "teacher/teacher_list.html", context)
+
+
+def teacher_create_view(request):
+    form = TeacherCreateForm(request.POST or None)
+    context = {"form": form}
+    if request.method == "POST":
+        if form.is_valid():
+            teacher = form.save()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                f"Teacher {teacher.name} was added successfully",
+            )
+            return redirect("core:teacher_list")
+        else:
+            messages.add_message(request, messages.ERROR, form.errors.as_text())
+
+    return render(request, "teacher/teacher_create.html", context=context)
+
+
+def teacher_details_view(request, pk: int):
+    teacher = get_object_or_404(Teacher, pk=pk)
+    context = {"teacher": teacher}
+    return render(request, "teacher/teacher_details.html", context=context)
+
+
+def teacher_update_view(request, pk: int):
+    return HttpResponse("Not Implemented yet...")

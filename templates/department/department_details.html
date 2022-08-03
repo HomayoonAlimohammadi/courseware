@@ -1,0 +1,31 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+{% block head %} 
+<title>Department #{{ department.department_number }}</title>
+{% endblock %} 
+
+{% block body %} 
+<h2>Department #{{ department.department_number }} Details:</h2>
+<p>
+    <b>Name: </b> {{ department.name }}
+</p>
+<p>
+    <b>Description: </b>
+    {% if department.description %} 
+        {{ department.description }}
+    {% else %} 
+        --- 
+    {% endif %} 
+</p>
+<p>
+    <b>Department Number: </b> {{ department.department_number }}
+</p>
+<p>
+    <b>Manager: </b>
+    <a href="{% url 'core:user_details' department.manager.username %}">
+        {{ department.manager.username }}
+    </a>
+</p>
+{% endblock %} 

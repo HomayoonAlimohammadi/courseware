@@ -1,9 +1,6 @@
 from django.contrib.auth import get_user_model
 from django import forms
-from core.models import Course
-
-
-User = get_user_model()
+from core.models import Course, Department, Teacher, User
 
 
 class UserCreateForm(forms.ModelForm):
@@ -23,6 +20,7 @@ class UserCreateForm(forms.ModelForm):
             "email",
             "password",
             "confirm_password",
+            "image",
         ]
 
     def clean(self):
@@ -85,9 +83,19 @@ class ContactUsForm(forms.Form):
 
 
 class CourseCreateForm(forms.ModelForm):
+    start_time = forms.TimeField(help_text="Example: 10:00")
+    end_time = forms.TimeField(help_text="Example: 12:00")
+
     class Meta:
         model = Course
-        exclude = ["user"]
+        exclude = ["user", "first_day", "second_day"]
+
+    def clean(self):
+        cleaned_data = super(CourseCreateForm, self).clean()
+        start_time = cleaned_data.get("start_time")  # type: ignore
+        end_time = cleaned_data.get("end_time")  # type: ignore
+        if start_time >= end_time:  # type: ignore
+            raise forms.ValidationError("Course should start before it ends!")
 
 
 class CourseUpdateForm(forms.Form):
@@ -100,3 +108,26 @@ class CourseUpdateForm(forms.Form):
     end_time = forms.TimeField()
     first_day = forms.CharField(max_length=32)
     second_day = forms.CharField(max_length=32)
+
+
+class DepartmentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Department
+        exclude = ["manager"]
+
+
+class DepartmentUpdateForm(forms.Form):
+    name = forms.CharField(max_length=128)
+    description = forms.CharField(widget=forms.Textarea(), required=False)
+    department_number = forms.IntegerField()
+
+
+class TeacherUpdateForm(forms.Form):
+    first_name = forms.CharField(max_length=128)
+    last_name = forms.CharField(max_length=128)
+
+
+class TeacherCreateForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = ["first_name", "last_name"]
