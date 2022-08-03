@@ -47,6 +47,11 @@
                             <button type="button">Create Department</button>
                         </a>
                     {% endif %}
+                    {% if request.user.is_staff %} 
+                        <a href="{% url 'core:interval_create' %}">
+                            <button type="button">Create Interval</button>
+                        </a>
+                    {% endif %}
                     <a href="{% url 'core:user_logout' %}">
                         <button type="button">Logout</button>
                     </a>

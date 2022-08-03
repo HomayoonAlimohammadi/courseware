@@ -76,6 +76,8 @@
                 Update Information
             </button>
         </a>
+        <br/></br>
+        <a href="{% url 'core:index' %}"><button type="button">Add Interval</button></a>
     {% endif %} 
     {% if not user.is_staff %} 
     <br/><br/><br/>
@@ -104,6 +106,19 @@
             <li>No Course from this Teacher is available.</li>
         {% endfor %} 
     </ul>
-    {% endif %} 
+    <br/><br/>
+    <h3>Intervals:</h3>
+    <ul>
+        {% for interval in user.intervals.all %} 
+            <li>{{ interval.start_time }} to {{ interval.end_time }} - Capacity: {{ interval.caparity }} --> <a href="{% url 'core:index' %}">
+                <button type="button">Reserve</button>
+            </a>
+            </li>
+            
+        {% empty %} 
+            <li>No Intervals are available for this teacher.</li>
+        {% endfor %} 
+    </ul> 
+    {% endif %}
 {% endif %}
 {% endblock %} 

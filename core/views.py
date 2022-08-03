@@ -403,6 +403,7 @@ def department_update_view(request, department_number: int):
     return render(request, "department/department_update.html", context=context)
 
 
+### TODO: add this to layout hrefs
 @require_http_methods(["GET"])
 def teacher_list_view(request):
     q = request.GET.get("q", "")
@@ -411,5 +412,25 @@ def teacher_list_view(request):
         .filter(is_staff=True)
         .order_by("last_name")
     )
-    context = {"teachers": teachers}
-    return render(request, "teacher/teacher_list.html", context)
+    context = {"users": teachers}
+    return render(request, "user/user_list.html", context)
+
+
+def user_interval_create_view(request, username: str):
+    HttpResponse("Not implemented yet.")
+
+
+def user_interval_list_view(request, username: str):
+    HttpResponse("Not implemented yet.")
+
+
+def user_interval_details_view(request, username: str, pk: int):
+    HttpResponse("Not implemented yet.")
+
+
+def user_interval_update_view(request, username: str, pk: int):
+    HttpResponse("Not implemented yet.")
+
+
+def user_interval_delete_view(request, username: str, pk: int):
+    HttpResponse("Not implemented yet.")
