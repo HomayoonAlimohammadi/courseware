@@ -2,3 +2,5 @@ env/
 draft.ipynb
 credentials.json
 .sqlite3
+__pycache__
+.vagrant
