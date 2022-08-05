@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 import json
+from django.contrib.messages import constants
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -144,3 +145,11 @@ with open(os.path.join(BASE_DIR, "courseware/credentials.json"), "r") as f:
     SUPPORT_EMAIL = data.get("SUPPORT_EMAIL")
 
 AUTH_USER_MODEL = "core.User"
+
+MESSAGE_TAGS = {
+    constants.DEBUG: "alert-secondary",
+    constants.INFO: "alert-info",
+    constants.SUCCESS: "alert-success",
+    constants.WARNING: "alert-warning",
+    constants.ERROR: "alert-danger",
+}

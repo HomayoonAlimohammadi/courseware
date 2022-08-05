@@ -13,6 +13,13 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+- In order to run the application via `Uvicorn`, do as follows:
+
+```shell
+python manage.py collectstatic --noinput
+uvicorn courseware.asgi:application --host 0.0.0.0
+```
+
 3. Don't forget to include your own `credentials.json` inside `./courseware/` in order for the mailing feature to work.
 
 ## Updates to come:

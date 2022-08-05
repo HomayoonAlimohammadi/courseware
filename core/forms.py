@@ -55,22 +55,21 @@ class UserCreateForm(forms.ModelForm):
             return email
 
 
-class UserUpdateForm(forms.Form):
-    first_name = forms.CharField(max_length=128, required=False)
-    last_name = forms.CharField(max_length=128, required=False)
-    email = forms.EmailField()
-    bio = forms.CharField(widget=forms.Textarea(), required=False)
-    password = forms.CharField(widget=forms.PasswordInput(), required=False)
-    confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False)
-    image = forms.ImageField(required=False)
-    error_messages = {"duplicate_username": "Usernames must be unique."}
+class UserUpdateForm(forms.ModelForm):
+    bio_placeholder = "Write about yourself using Markdown language:"
+    bio = forms.CharField(
+        widget=forms.Textarea({"placeholder": bio_placeholder}), required=False
+    )
 
-    def clean(self):
-        cleaned_data = super(UserUpdateForm, self).clean()
-        password = cleaned_data.get("password")  # type: ignore
-        confirm_password = cleaned_data.get("confirm_password")  # type: ignore
-        if password != confirm_password:
-            raise forms.ValidationError("password and confirm_password does not match")
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "bio",
+            "image",
+        ]
 
 
 class UserLoginForm(forms.Form):

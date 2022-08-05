@@ -9,15 +9,15 @@
 
 
 {% block body %} 
-<h2>Register</h2>
+<h2>Update Information:</h2>
 <form action="{% url 'core:user_update' request.user.username %}" method="post" enctype="multipart/form-data">
     {% csrf_token %} 
     {{ form.as_p }}
     <br/>
     Gender: <select name="gender">
-        <option>Other</option>
-        <option>Male</option>
-        <option>Female</option>
+        <option {% if request.user.gender == "Other" %} selected {% endif %}>Other</option>
+        <option {% if request.user.gender == "Male" %} selected {% endif %}>Male</option>
+        <option {% if request.user.gender == "Female" %} selected {% endif %}>Female</option>
     </select>
     <br/><br/>
     <button type="submit">Update</button>

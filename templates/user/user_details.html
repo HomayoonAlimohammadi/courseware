@@ -1,22 +1,11 @@
 {% extends 'layout.html' %} 
 
 {% load static %} 
+{% load markdown_extras %} 
 
 
 {% block head %} 
 <title>Profile</title>
-<style>
-    img {
-        height: 200px; 
-        width: 200px;
-        border-radius: 50%;
-        border: 5px solid orange
-    }
-    img:hover {
-        border: 10px solid orange
-
-    }
-</style>
 {% endblock %} 
 
 {% block body %} 
@@ -63,7 +52,14 @@
     <b>Email: </b> {{ user.email }}
 </p>
 <p>
-    <b>Bio: </b> {{ user.bio }}
+    <b>Bio: </b>
+    {% if user.bio %} 
+        <div id="bio">
+            {{ user.bio | markdown | safe }}
+        </div> 
+    {% else %} 
+    ---
+    {% endif %}
 </p>
 <p>
     <b>Gender: </b> {{ user.gender }}
@@ -77,7 +73,6 @@
             </button>
         </a>
         <br/></br>
-        <a href="{% url 'core:index' %}"><button type="button">Add Interval</button></a>
     {% endif %} 
     {% if not user.is_staff %} 
     <br/><br/><br/>
@@ -91,7 +86,17 @@
                 <li>No courses have been added yet.</li>
             {% endfor %} 
         </ul>
+    <br/><br/>
+    <h3>Reserved Intervals:</h3>
+    <ul>
+        {% for interval in user.reserved_intervals.all %} 
+            <li>{{ interval }}</li> 
+        {% empty %} 
+            <li>No Intervals have been reserved yet.</li>
+        {% endfor %} 
+    </ul>
     {% else %}
+    <br/><br/>
     <h3>Courses:</h3>
     <ul>
         {% for course in user.courses.all %} 
@@ -119,6 +124,7 @@
             <li>No Intervals are available for this teacher.</li>
         {% endfor %} 
     </ul> 
+    <a href="{% url 'core:index' %}"><button type="button">Add Interval</button></a>
     {% endif %}
 {% endif %}
 {% endblock %} 

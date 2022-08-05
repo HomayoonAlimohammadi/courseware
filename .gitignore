@@ -4,3 +4,4 @@ credentials.json
 db.sqlite3
 __pycache__
 .vagrant
+staticfiles/

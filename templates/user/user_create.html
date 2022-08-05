@@ -12,10 +12,10 @@
 <form action="{% url 'core:user_create' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %} 
     {{ form.as_p }} 
-    <select name="title">
+    Role: <select name="title">
         <option>Teacher</option>
         <option>Student</option>
-    </select>
+    </select><br/><br/>
     <button type="submit">Register</button>
 </form>
 <br/><br/>

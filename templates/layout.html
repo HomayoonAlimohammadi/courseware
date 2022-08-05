@@ -1,94 +1,105 @@
-{% load static %} 
+{% load static %}
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-        <link rel="stylesheet" href="{% static 'style.css' %}">
-        <link rel="icon" href ="{% static 'logo.png' %}" type = "image/x-icon"> 
-
-
-        {% block head %} 
-        {% endblock %} 
-    </head>
-    <body>
-        <div class="container" style="text-align: center;">
-            <h1 id="main-header">
-                <a href="{% url 'core:index' %}">Courseware WebApp</a>
-            </h1>
-
-            <div id="messages">
-                <ul>
-                    {% for message in messages %} 
-                        <li>{{ message }}</li>
-                    {% endfor %} 
-                </ul>
-            </div>
-            <div id="user-hello">
-                {% if request.user.is_authenticated %} 
-                    <b>Hello {{ request.user.username|title }},</b><br/>
-                    {% if request.user.is_staff %} 
-                        <b>You are signed in as a Teacher.</b>
-                    {% else %}
-                        <b>You are signed in as a Student.</b>
-                    {% endif %} 
-                    <b></b>
-                    <br/><br/>
-                    <a href="{% url 'core:user_details' request.user.username %}">
-                        <button type="button">Profile</button>
-                    </a>
-                    {% if request.user.is_superuser %} 
-                        <a href="{% url 'core:course_create' %}">
-                            <button type="button">Create Course</button>
-                        </a>
-                        <a href="{% url 'core:department_create' %}">
-                            <button type="button">Create Department</button>
-                        </a>
-                    {% endif %}
-                    {% if request.user.is_staff %} 
-                        <a href="{% url 'core:interval_create' %}">
-                            <button type="button">Create Interval</button>
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'core:user_logout' %}">
-                        <button type="button">Logout</button>
-                    </a>
-                {% else %} 
-                    <b>You are not signed in.</b><br/><br/>
-                    <a href="{% url 'core:user_login' %}">
-                        <button type="button">Login</button>
-                    </a>
-                    <a href="{% url 'core:user_create' %}">
-                        <button type="button">Register</button>
-                    </a>
-                {% endif %} 
-                <br/><br/>
-                <a href="{% url 'core:course_list' %}">
-                    <button type="button">Courses</button>
-                </a>
-                <a href="{% url 'core:user_list' %}">
-                    <button type="button">Users</button>
-                </a>
-                <a href="{% url 'core:department_list' %}">
-                    <button type="button">Departments</button>
-                </a>
-            </div>
-            <hr>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link rel="icon" href="{% static 'logo.png' %}" type="image/x-icon" />
+    {% block head %} {% endblock %}
+  </head>
+  <body>
+    <div class="container" style="text-align: center">
+      <h1 id="main-header">
+        <a href="{% url 'core:index' %}">Courseware WebApp</a>
+      </h1>
+      {% for message in messages %}
+      <div id="messages" class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+          {{ message }}
         </div>
-        <div class="container">
-            {% block body %} 
-            {% endblock %}
-        </div>
-        <div class="container" style="text-align:center;">
-            <hr>
-            <a href="{% url 'core:contact_us' %}">
-                <button type="button">Contact Us</button>
-            </a>
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js" integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK" crossorigin="anonymous"></script>
-    </body>
+
+      </div>
+      {% endfor %}
+      <div id="user-hello">
+        {% if request.user.is_authenticated %}
+        <b>Hello {{ request.user.username|title }},</b><br />
+        {% if request.user.is_staff %}
+        <b>You are signed in as a Teacher.</b>
+        {% else %}
+        <b>You are signed in as a Student.</b>
+        {% endif %}
+        <b></b>
+        <br /><br />
+        <a href="{% url 'core:user_details' request.user.username %}">
+          <button type="button">Profile</button>
+        </a>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'core:course_create' %}">
+          <button type="button">Create Course</button>
+        </a>
+        <a href="{% url 'core:department_create' %}">
+          <button type="button">Create Department</button>
+        </a>
+        {% endif %} {% if request.user.is_staff %}
+        <a href="{% url 'core:user_interval_create' request.user.username %}">
+          <button type="button">Create Interval</button>
+        </a>
+        {% endif %}
+        <a href="{% url 'core:user_logout' %}">
+          <button type="button">Logout</button>
+        </a>
+        {% else %}
+        <b>You are not signed in.</b><br /><br />
+        <a href="{% url 'core:user_login' %}">
+          <button type="button">Login</button>
+        </a>
+        <a href="{% url 'core:user_create' %}">
+          <button type="button">Register</button>
+        </a>
+        {% endif %}
+        <br /><br />
+        <a href="{% url 'core:course_list' %}">
+          <button type="button">Courses</button>
+        </a>
+        <a href="{% url 'core:user_list' %}">
+          <button type="button">Users</button>
+        </a>
+        <a href="{% url 'core:department_list' %}">
+          <button type="button">Departments</button>
+        </a>
+      </div>
+      <hr />
+    </div>
+    <div class="container">{% block body %} {% endblock %}</div>
+    <div class="container" style="text-align: center">
+      <hr />
+      <a href="{% url 'core:contact_us' %}">
+        <button type="button">Contact Us</button>
+      </a>
+    </div>
+    <br/><br/><br/><br/>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js"
+      integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
+      integrity="sha384-ODmDIVzN+pFdexxHEHFBQH3/9/vQ9uori45z4JjnFsRydbmQbmL5t1tQ0culUzyK"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
