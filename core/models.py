@@ -44,7 +44,7 @@ class Course(models.Model):
         User, related_name="added_courses", on_delete=models.CASCADE
     )
     participants = models.ManyToManyField(
-        User, related_name="participated_courses", null=True, blank=True
+        User, related_name="participated_courses", blank=True
     )
     department = models.ForeignKey(
         Department, related_name="courses", on_delete=models.CASCADE
