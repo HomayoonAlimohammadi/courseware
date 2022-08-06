@@ -1,6 +1,7 @@
 {% extends 'layout.html' %} 
 
 {% load static %} 
+{% load markdown_extras %} 
 
 {% block head %} 
 <title>Department #{{ department.department_number }}</title>
@@ -14,10 +15,12 @@
 <p>
     <b>Description: </b>
     {% if department.description %} 
-        {{ department.description }}
+        <div id="bio">
+            {{ department.description | markdown | safe }}
+        </div> 
     {% else %} 
-        --- 
-    {% endif %} 
+    ---
+    {% endif %}
 </p>
 <p>
     <b>Department Number: </b> {{ department.department_number }}

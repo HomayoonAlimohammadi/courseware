@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
 from core.utils import uuid_namer
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
@@ -12,7 +14,14 @@ class User(AbstractUser):
     gender = models.CharField(max_length=16, default="Other")
 
     def __str__(self) -> str:
-        return f"User({self.username})"
+        role = "Student"
+        if self.is_staff:
+            role = "Teacher"
+        return f"{self.username} - {role}"
+
+    def clean(self):
+        if self.gender.lower() not in ["male", "female", "other"]:
+            raise ValidationError(_("Invalid gender was selected."))
 
 
 class Department(models.Model):
@@ -28,14 +37,6 @@ class Department(models.Model):
 
     def __repr__(self) -> str:
         return f"Department({self.name[:5]})"
-
-
-# class Teacher(AbstractUser):
-#     def __str__(self) -> str:
-#         return f"Mr/Ms {self.last_name}"
-
-#     def __repr__(self) -> str:
-#         return f"Teacher({self.last_name[:5]})"
 
 
 class Course(models.Model):
@@ -60,18 +61,49 @@ class Course(models.Model):
     def __str__(self) -> str:
         return f"Course({self.name[:10]}...)"
 
+    def clean(self):
+        valid_days = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        if self.start_time >= self.end_time:
+            raise ValidationError(_("Course should start before it ends!"))
+        if self.first_day.lower() == self.second_day.lower():
+            raise ValidationError(_("Course should be held in two different days."))
+        if (
+            self.first_day.lower() not in valid_days
+            or self.second_day.lower() not in valid_days
+        ):
+            raise ValidationError(_("Course should be held in valid working days."))
+        if not self.teacher.is_staff:
+            raise ValidationError(_("Teacher must be a staff."))
+
 
 class Interval(models.Model):
     teacher = models.ForeignKey(
         User, related_name="intervals", on_delete=models.CASCADE
     )
+    day = models.CharField(max_length=16)
     reserving_students = models.ManyToManyField(User, related_name="reserved_intervals")
     capacity = models.IntegerField()
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     def __str__(self) -> str:
-        return f"{self.start_time} - {self.end_time} | {self.capacity}"
+        return f"{self.day} | {self.start_time} - {self.end_time} | {self.capacity}"
+
+    def clean(self):
+        if self.day.lower() not in [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+        ]:
+            raise ValidationError(_("Interval should be held in valid working days."))
+        if self.capacity < self.reserving_students.count():
+            raise ValidationError(
+                _("Capacity can not be less than already reserving students.")
+            )
+        if self.start_time >= self.end_time:
+            raise ValidationError(_("Course should start before it ends!"))
 
 
 @receiver(models.signals.post_delete, sender=User)

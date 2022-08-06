@@ -13,6 +13,9 @@
     <form action="{% url 'core:user_list' %}" method="get">
         <input name="q" />
         <button type="submit">Search</button>
+        {% if 'q' in request.GET %} 
+        Showing results for: "{{ q }}"
+        {% endif %} 
     </form>
 </div>
 <hr>
@@ -23,7 +26,7 @@
             <li class="user-link">
                 <h5>
                     <a href="{% url 'core:user_details' user.username %}">
-                        {{ user.username }}
+                        {{ user.username }} --- {{ user.first_name }} {{ user.last_name }}
                     </a>
                 </h5>
             </li>
@@ -40,7 +43,7 @@
             <li class="user-link">
                 <h5>
                     <a href="{% url 'core:user_details' user.username %}">
-                        {{ user.username }}
+                        {{ user.username }} --- {{ user.first_name }} {{ user.last_name }}
                     </a>
                 </h5>
             </li>

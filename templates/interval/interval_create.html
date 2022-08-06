@@ -1,0 +1,16 @@
+{% extends 'layout.html' %} 
+
+{% load static %} 
+
+{% block head %} 
+<title>Create Interval</title>
+{% endblock %} 
+
+{% block body %} 
+<h2>Create Interval:</h2>
+<form action="{% url 'core:user_interval_create' username=request.user.username %}" method="post">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <button type="submit">Create</button>
+</form>
+{% endblock %}

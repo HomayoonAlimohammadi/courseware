@@ -17,6 +17,9 @@
     <form action="{% url 'core:course_list' %}" method="get">
         <input name="q" />
         <button type="submit">Search</button>
+        {% if 'q' in request.GET %} 
+        Showing results for: "{{ q }}"
+        {% endif %} 
     </form>
 </div>
 <hr>

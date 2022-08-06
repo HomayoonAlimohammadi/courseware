@@ -13,6 +13,21 @@
 <form action="{% url 'core:course_update' course.course_number %}" method="post">
     {% csrf_token %} 
     {{ form.as_p }}
+    First Day: <select name="first_day">
+        <option {% if course.first_day == 'Monday' %}selected{% endif %}>Monday</option>
+        <option {% if course.first_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+        <option {% if course.first_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+        <option {% if course.first_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+        <option {% if course.first_day == 'Friday' %}selected{% endif %}>Friday</option>
+    </select>&emsp;
+
+    Second Day: <select name="second_day">
+        <option {% if course.second_day == 'Monday' %}selected{% endif %}>Monday</option>
+        <option {% if course.second_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+        <option {% if course.second_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+        <option {% if course.second_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+        <option {% if course.second_day == 'Friday' %}selected{% endif %}>Friday</option>
+    </select><br/><br/>
     <button type="submit">Update</button>
     <a href="{% url 'core:course_details' course.course_number %}">
         <button type="button">Back to Course</button>

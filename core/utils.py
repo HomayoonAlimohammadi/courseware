@@ -60,7 +60,7 @@ def send_email_to_support_manual(
     title: str | None,
     text: str | None,
     customer_email: str | None,
-    support_email: str = "danial@divar.com",
+    support_email: str = "ostadju@fastmail.com",
 ):
     try:
         with open("credentials.json", "r") as f:

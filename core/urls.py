@@ -16,19 +16,9 @@ urlpatterns = [
     path("users/<str:username>", views.user_details_view, name="user_details"),
     path("users/<str:username>/update", views.user_update_view, name="user_update"),
     path(
-        "users/<str:username>/intervals",
-        views.user_interval_list_view,
-        name="user_interval_list",
-    ),
-    path(
         "users/<str:username>/intervals/create",
         views.user_interval_create_view,
         name="user_interval_create",
-    ),
-    path(
-        "users/<str:username>/intervals/<int:pk>/",
-        views.user_interval_details_view,
-        name="user_interval_details",
     ),
     path(
         "users/<str:username>/intervals/<int:pk>/update",
