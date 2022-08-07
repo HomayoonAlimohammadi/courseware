@@ -98,7 +98,7 @@ class Interval(models.Model):
             "friday",
         ]:
             raise ValidationError(_("Interval should be held in valid working days."))
-        if self.capacity < self.reserving_students.count():
+        if self.pk and self.capacity < self.reserving_students.count():
             raise ValidationError(
                 _("Capacity can not be less than already reserving students.")
             )

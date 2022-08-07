@@ -115,9 +115,12 @@
     <h3>Intervals:</h3>
     <ul>
         {% for interval in user.intervals.all %} 
-            <li>{{ interval.start_time }} to {{ interval.end_time }} - Capacity: {{ interval.caparity }} --> <a href="{% url 'core:index' %}">
+            <li>From: {{ interval.start_time }} To: {{ interval.end_time }} | Capacity: {{ interval.capacity }} | Reserved: {{ interval.reserving_students.count }} 
+            {% if not request.user.is_staff %} 
+            <a href="{% url 'core:index' %}">
                 <button type="button">Reserve</button>
             </a>
+            {% endif %}
             </li>
             
         {% empty %} 

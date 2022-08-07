@@ -419,12 +419,15 @@ def user_interval_create_view(request, username: str):
     context = {"form": form}
     if request.method == "POST":
         if form.is_valid():
-            interval = form.save(commit=False)
+            interval = Interval(**form.cleaned_data)
+            day = request.POST.get("day")
+            interval.day = day
+            interval.teacher = request.user
             try:
                 interval.full_clean()
             except ValidationError as e:
                 messages.add_message(request, messages.ERROR, str(e))
-                return redirect("core:interval_create", username=username)
+                return redirect("core:user_interval_create", username=username)
             intervals = list(user.intervals.all())  # type: ignore
             if interval_has_overlap(intervals=intervals, new_interval=interval):
                 messages.add_message(
@@ -432,14 +435,14 @@ def user_interval_create_view(request, username: str):
                     messages.ERROR,
                     "Interval overlaps with your current Intervals.",
                 )
-                return redirect("core:interval_create", username=username)
+                return redirect("core:user_interval_create", username=username)
             interval.save()
             messages.add_message(
                 request, messages.SUCCESS, "Interval was added successfully."
             )
         else:
             messages.add_message(request, messages.ERROR, form.errors.as_text())
-            return redirect("core:interval_create", username=username)
+            return redirect("core:user_interval_create", username=username)
 
     return render(request, "interval/interval_create.html", context=context)
 
@@ -459,16 +462,22 @@ def user_interval_update_view(request, username: str, pk: int):
         )
         return redirect("core:user_details", username=user.username)
     interval = get_object_or_404(Interval, pk=pk)
-    form = IntervalUpdateForm(request.POST or None, instance=interval)
-    context = {"form": form, "interval": interval}
     if request.method == "POST":
+        form = IntervalUpdateForm(request.POST)
         if form.is_valid():
-            interval = form.save(commit=False)
+            capacity = form.cleaned_data.get("capacity")
+            start_time = form.cleaned_data.get("start_time")
+            end_time = form.cleaned_data.get("end_time")
+            day = request.POST.get("day")
+            interval.day = day
+            interval.capacity = capacity
+            interval.start_time = start_time
+            interval.end_time = end_time
             try:
                 interval.full_clean()
             except ValidationError as e:
                 messages.add_message(request, messages.ERROR, str(e))
-                return redirect("core:interval_update", username=username, pk=pk)
+                return redirect("core:user_interval_update", username=username, pk=pk)
             intervals = list(user.intervals.exclude(pk=pk).all())  # type: ignore
             if interval_has_overlap(intervals=intervals, new_interval=interval):
                 messages.add_message(
@@ -476,7 +485,7 @@ def user_interval_update_view(request, username: str, pk: int):
                     messages.ERROR,
                     "Interval overlaps with your current Intervals.",
                 )
-                return redirect("core:interval_create", username=username)
+                return redirect("core:user_interval_update", username=username)
             interval.save()
             messages.add_message(
                 request,
@@ -485,6 +494,14 @@ def user_interval_update_view(request, username: str, pk: int):
             )
         else:
             messages.add_message(request, messages.ERROR, "Invalid data.")
+    initial = {
+        "day": interval.day,
+        "start_time": interval.start_time,
+        "end_time": interval.end_time,
+        "capacity": interval.capacity,
+    }
+    form = IntervalUpdateForm(initial=initial)
+    context = {"form": form, "interval": interval}
     return render(request, "interval/interval_update.html", context=context)
 
 

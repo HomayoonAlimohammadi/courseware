@@ -126,37 +126,13 @@ class DepartmentUpdateForm(forms.ModelForm):
         fields = ["name", "description", "department_number"]
 
 
-class IntervalCreateForm(forms.ModelForm):
+class IntervalCreateForm(forms.Form):
     start_time = forms.TimeField(help_text="Example: 10:00")
     end_time = forms.TimeField(help_text="Example: 12:00")
-
-    class Meta:
-        model = Interval
-        fields = ["day", "capacity", "start_time", "end_time"]
-
-    def clean(self):
-        cleaned_data = super(IntervalCreateForm, self).clean()
-        start_time = cleaned_data.get("start_time")  # type: ignore
-        end_time = cleaned_data.get("end_time")  # type: ignore
-        if not start_time or not end_time:
-            raise forms.ValidationError("Invalid time formats.")
-        if start_time >= end_time:  # type: ignore
-            raise forms.ValidationError("Course should start before it ends!")
+    capacity = forms.IntegerField()
 
 
-class IntervalUpdateForm(forms.ModelForm):
+class IntervalUpdateForm(forms.Form):
     start_time = forms.TimeField(help_text="Example: 10:00")
     end_time = forms.TimeField(help_text="Example: 12:00")
-
-    class Meta:
-        model = Interval
-        fields = ["day", "capacity", "start_time", "end_time"]
-
-    def clean(self):
-        cleaned_data = super(IntervalUpdateForm, self).clean()
-        start_time = cleaned_data.get("start_time")  # type: ignore
-        end_time = cleaned_data.get("end_time")  # type: ignore
-        if not start_time or not end_time:
-            raise forms.ValidationError("Invalid time formats.")
-        if start_time >= end_time:  # type: ignore
-            raise forms.ValidationError("Course should start before it ends!")
+    capacity = forms.IntegerField()

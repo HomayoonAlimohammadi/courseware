@@ -10,6 +10,13 @@
 <form action="{% url 'core:user_interval_update' username=request.user.username, pk=interval.pk %}" method="post">
     {% csrf_token %} 
     {{ form.as_p }}
+    Day: <select name="day">
+        <option {% if interval.day == 'Monday' %}selected{% endif %}>Monday</option>
+        <option {% if interval.day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+        <option {% if interval.day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+        <option {% if interval.day == 'Thursday' %}selected{% endif %}>Thursday</option>
+        <option {% if interval.day == 'Friday' %}selected{% endif %}>Friday</option>
+    </select><br/><br/>
     <button type="submit">Update</button>
 </form>
 {% endblock %} 
