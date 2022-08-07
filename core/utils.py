@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from django.core.mail import send_mail
 from django.conf import settings
 from uuid import uuid4
+import core.models as models
 
 
 class ContactSupportException(Exception):
@@ -102,6 +103,39 @@ def send_email_to_support(
         raise ContactSupportException
 
 
-def uuid_namer(instance, file_name):
+def uuid_namer(instance, file_name: str) -> str:
     name, ext = file_name.split(".")
     return f"{name}_{str(uuid4())}.{ext}"
+
+
+def interval_has_overlap(
+    intervals: list[models.Interval], new_interval: models.Interval
+) -> bool:
+    """Returns `True` if the `new_interval` overlaps with current `intervals` of the `teacher`. If not, returns `False`."""
+    for interval in intervals:
+        # ref:  (   )
+        # new:    (     )
+        if (
+            new_interval.start_time < interval.end_time
+            and new_interval.start_time >= interval.start_time
+        ):
+            return True
+        # ref:  (    )
+        # new: (   )
+        if (
+            new_interval.end_time <= interval.end_time
+            and new_interval.end_time >= interval.start_time
+        ):
+            return True
+        # The two above also include:
+        # ref  (     )
+        # new:   (  )
+
+        # ref :     (   )
+        # new:    (       )
+        if (
+            new_interval.start_time <= interval.start_time
+            and new_interval.end_time >= interval.end_time
+        ):
+            return True
+    return False

@@ -19,7 +19,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from core.utils import send_email_to_support, ContactSupportException
+from core.utils import (
+    send_email_to_support,
+    ContactSupportException,
+    interval_has_overlap,
+)
 from core.models import Course, Department, Interval, User
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
@@ -401,6 +405,17 @@ def department_update_view(request, department_number: int):
 @require_http_methods(["GET", "POST"])
 def user_interval_create_view(request, username: str):
     form = IntervalCreateForm(request.POST or None)
+    user = get_object_or_404(User, username=username)
+    if not user.is_staff:
+        messages.add_message(
+            request, messages.ERROR, "Only teachers can have Intervals."
+        )
+        return redirect("core:user_details", username=user.username)
+    if user != request.user:
+        messages.add_message(
+            request, messages.ERROR, "You can only make Intervals for yourself!"
+        )
+        return redirect("core:user_details", username=request.user.username)
     context = {"form": form}
     if request.method == "POST":
         if form.is_valid():
@@ -409,6 +424,14 @@ def user_interval_create_view(request, username: str):
                 interval.full_clean()
             except ValidationError as e:
                 messages.add_message(request, messages.ERROR, str(e))
+                return redirect("core:interval_create", username=username)
+            intervals = list(user.intervals.all())  # type: ignore
+            if interval_has_overlap(intervals=intervals, new_interval=interval):
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Interval overlaps with your current Intervals.",
+                )
                 return redirect("core:interval_create", username=username)
             interval.save()
             messages.add_message(
@@ -430,7 +453,11 @@ def user_interval_update_view(request, username: str, pk: int):
             request, messages.ERROR, "You can only edit your own Interval."
         )
         return redirect("core:user_details", username=request.user.username)
-
+    if not user.is_staff:
+        messages.add_message(
+            request, messages.ERROR, "Only teachers can have Intervals."
+        )
+        return redirect("core:user_details", username=user.username)
     interval = get_object_or_404(Interval, pk=pk)
     form = IntervalUpdateForm(request.POST or None, instance=interval)
     context = {"form": form, "interval": interval}
@@ -442,6 +469,14 @@ def user_interval_update_view(request, username: str, pk: int):
             except ValidationError as e:
                 messages.add_message(request, messages.ERROR, str(e))
                 return redirect("core:interval_update", username=username, pk=pk)
+            intervals = list(user.intervals.exclude(pk=pk).all())  # type: ignore
+            if interval_has_overlap(intervals=intervals, new_interval=interval):
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Interval overlaps with your current Intervals.",
+                )
+                return redirect("core:interval_create", username=username)
             interval.save()
             messages.add_message(
                 request,
@@ -457,6 +492,18 @@ def user_interval_update_view(request, username: str, pk: int):
 @require_http_methods(["GET", "POST"])
 def user_interval_delete_view(request, username: str, pk: int):
     interval = get_object_or_404(Interval, pk=pk)
+    user = get_object_or_404(User, username=username)
+    if request.user != user:
+        messages.add_message(
+            request, messages.ERROR, "You can only delete your own Intervals!"
+        )
+        return redirect("core:user_details", username=request.user.username)
+    if not user.is_staff:
+        messages.add_message(
+            request, messages.ERROR, "Only teachers can have Intervals."
+        )
+        return redirect("core:user_details", username=user.username)
+
     context = {"interval": interval}
     if request.method == "POST":
         interval.delete()

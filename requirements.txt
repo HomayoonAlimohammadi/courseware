@@ -23,6 +23,7 @@ importlib-metadata==4.12.0
 itsdangerous==2.1.2
 Jinja2==3.1.2
 locust==2.10.2
+Markdown==3.4.1
 MarkupSafe==2.1.1
 msgpack==1.0.4
 mypy-extensions==0.4.3
