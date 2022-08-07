@@ -410,12 +410,12 @@ def user_interval_create_view(request, username: str):
         messages.add_message(
             request, messages.ERROR, "Only teachers can have Intervals."
         )
-        return redirect("core:user_details", username=user.username)
+        return redirect("core:user_details", username=username)
     if user != request.user:
         messages.add_message(
             request, messages.ERROR, "You can only make Intervals for yourself!"
         )
-        return redirect("core:user_details", username=request.user.username)
+        return redirect("core:user_details", username=username)
     context = {"form": form}
     if request.method == "POST":
         if form.is_valid():
@@ -455,12 +455,12 @@ def user_interval_update_view(request, username: str, pk: int):
         messages.add_message(
             request, messages.ERROR, "You can only edit your own Interval."
         )
-        return redirect("core:user_details", username=request.user.username)
+        return redirect("core:user_details", username=username)
     if not user.is_staff:
         messages.add_message(
             request, messages.ERROR, "Only teachers can have Intervals."
         )
-        return redirect("core:user_details", username=user.username)
+        return redirect("core:user_details", username=username)
     interval = get_object_or_404(Interval, pk=pk)
     if request.method == "POST":
         form = IntervalUpdateForm(request.POST)
@@ -489,9 +489,10 @@ def user_interval_update_view(request, username: str, pk: int):
             interval.save()
             messages.add_message(
                 request,
-                messages.ERROR,
-                "Capacity can not be lower than currently reserving students.",
+                messages.SUCCESS,
+                "Interval was updated successfully.",
             )
+            return redirect("core:user_details", username=username)
         else:
             messages.add_message(request, messages.ERROR, "Invalid data.")
     initial = {
@@ -514,15 +515,16 @@ def user_interval_delete_view(request, username: str, pk: int):
         messages.add_message(
             request, messages.ERROR, "You can only delete your own Intervals!"
         )
-        return redirect("core:user_details", username=request.user.username)
+        return redirect("core:user_details", username=username)
     if not user.is_staff:
         messages.add_message(
             request, messages.ERROR, "Only teachers can have Intervals."
         )
-        return redirect("core:user_details", username=user.username)
+        return redirect("core:user_details", username=username)
 
     context = {"interval": interval}
     if request.method == "POST":
+        # TODO: Send notification about Intervan being deleted.
         interval.delete()
         messages.add_message(
             request, messages.SUCCESS, "Interval was deleted successfully."
@@ -530,3 +532,54 @@ def user_interval_delete_view(request, username: str, pk: int):
         return redirect("core:use_details", username=username)
 
     return render(request, "interval/interval_delete.html", context=context)
+
+
+@login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
+@require_http_methods(["GET"])
+def user_interval_reserve_view(request, username: str, pk: int):
+    if request.user.is_staff:
+        messages.add_message(
+            request, messages.ERROR, "Only Students can reserve Intervals."
+        )
+        return redirect("core:user_details", username=username)
+    interval = get_object_or_404(Interval, pk=pk)
+    student = request.user
+    if student in interval.reserving_students.all():
+        messages.add_message(
+            request, messages.ERROR, "You have already reserved this Interval."
+        )
+        return redirect("core:user_details", username=username)
+    if interval.capacity > interval.reserving_students.count():
+        interval.reserving_students.add(student)
+        messages.add_message(
+            request, messages.SUCCESS, "Interval was reserved successfully."
+        )
+    else:
+        messages.add_message(
+            request, messages.ERROR, "Interval does not have enough capacity."
+        )
+    return redirect("core:user_details", username=username)
+
+
+@login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
+@require_http_methods(["GET"])
+def user_interval_release_view(request, username: str, pk: int):
+    if request.user.is_staff:
+        messages.add_message(
+            request, messages.ERROR, "Only Students can release Intervals."
+        )
+        return redirect("core:user_details", username=username)
+    interval = get_object_or_404(Interval, pk=pk)
+    student = request.user
+    if student in interval.reserving_students.all():
+        interval.reserving_students.remove(student)
+        messages.add_message(
+            request, messages.SUCCESS, "Interval was released successfully."
+        )
+    else:
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "You can only release Intervals which you have reserved.",
+        )
+    return redirect("core:user_details", username=username)

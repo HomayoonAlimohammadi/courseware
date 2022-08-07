@@ -90,7 +90,14 @@
     <h3>Reserved Intervals:</h3>
     <ul>
         {% for interval in user.reserved_intervals.all %} 
-            <li>{{ interval }}</li> 
+            <li>
+                {{ interval }}
+                {% if request.user == user %} 
+                <a href="{% url 'core:user_interval_release' username=user.username pk=interval.pk %}">
+                    <button type="button">Release</button>
+                </a>
+                {% endif %} 
+            </li> 
         {% empty %} 
             <li>No Intervals have been reserved yet.</li>
         {% endfor %} 
@@ -115,19 +122,27 @@
     <h3>Intervals:</h3>
     <ul>
         {% for interval in user.intervals.all %} 
-            <li>From: {{ interval.start_time }} To: {{ interval.end_time }} | Capacity: {{ interval.capacity }} | Reserved: {{ interval.reserving_students.count }} 
-            {% if not request.user.is_staff %} 
-            <a href="{% url 'core:index' %}">
-                <button type="button">Reserve</button>
-            </a>
-            {% endif %}
-            </li>
-            
+            <li>
+                From: {{ interval.start_time }} To: {{ interval.end_time }} | Capacity: {{ interval.capacity }} | Reserved: {{ interval.reserving_students.count }} 
+
+                {% if not request.user.is_staff %} 
+                <a href="{% url 'core:user_interval_reserve' username=user.username pk=interval.pk %}">
+                    <button type="button">Reserve</button>
+                </a>
+                {% elif request.user == user %} 
+                <a href="{% url 'core:user_interval_update' username=user.username pk=interval.pk %}">
+                    <button type="button">Edit</button>
+                </a>
+                <a href="{% url 'core:user_interval_delete' username=user.username pk=interval.pk %}">
+                    <button type="button">Delete</button>
+                </a>
+                {% endif %}
+            </li>    
         {% empty %} 
             <li>No Intervals are available for this teacher.</li>
         {% endfor %} 
     </ul> 
-    <a href="{% url 'core:index' %}"><button type="button">Add Interval</button></a>
+    <a href="{% url 'core:user_interval_create' username=user.username %}"><button type="button">Add Interval</button></a>
     {% endif %}
 {% endif %}
 {% endblock %} 

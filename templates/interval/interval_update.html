@@ -7,7 +7,7 @@
 
 {% block body %} 
 <h2>Update Interval:</h2>
-<form action="{% url 'core:user_interval_update' username=request.user.username, pk=interval.pk %}" method="post">
+<form action="{% url 'core:user_interval_update' username=request.user.username pk=interval.pk %}" method="post">
     {% csrf_token %} 
     {{ form.as_p }}
     Day: <select name="day">
@@ -18,5 +18,8 @@
         <option {% if interval.day == 'Friday' %}selected{% endif %}>Friday</option>
     </select><br/><br/>
     <button type="submit">Update</button>
+    <a href="{% url 'core:index' %}">
+        <button type="button">Back to Homepage</button>
+    </a>
 </form>
 {% endblock %} 

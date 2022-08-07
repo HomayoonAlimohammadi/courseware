@@ -30,6 +30,16 @@ urlpatterns = [
         views.user_interval_delete_view,
         name="user_interval_delete",
     ),
+    path(
+        "users/<str:username>/intervals/<int:pk>/reserve",
+        views.user_interval_reserve_view,
+        name="user_interval_reserve",
+    ),
+    path(
+        "users/<str:username>/intervals/<int:pk>/release",
+        views.user_interval_release_view,
+        name="user_interval_release",
+    ),
     #### Courses
     path("courses/", views.index_view, name="course_list"),
     path("courses/create", views.course_create_view, name="course_create"),

@@ -87,7 +87,7 @@ class Interval(models.Model):
     end_time = models.TimeField()
 
     def __str__(self) -> str:
-        return f"{self.day} | {self.start_time} - {self.end_time} | {self.capacity}"
+        return f"{self.day} | {self.start_time} - {self.end_time} | {self.capacity} | {self.teacher.first_name} {self.teacher.last_name}"
 
     def clean(self):
         if self.day.lower() not in [
