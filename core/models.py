@@ -154,6 +154,3 @@ def notify_reserving_student_on_interval_delete(sender, instance, *args, **kwarg
         notify.send(
             instance.teacher, recipient=student, verb="Message", description=description
         )
-        print()
-        print(f"sent notification to {student.username}")
-        print()

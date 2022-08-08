@@ -568,7 +568,11 @@ def user_interval_delete_view(request, username: str, pk: int):
 
     context = {"interval": interval}
     if request.method == "POST":
-        # TODO: Send notification about Intervan being deleted.
+        for student in interval.reserving_students.all():
+            description = f"Teacher {user.username} deleted Interval on {interval}"
+            notify.send(
+                user, recipient=student, verb="Message", description=description
+            )
         interval.delete()
         messages.add_message(
             request, messages.SUCCESS, "Interval was deleted successfully."
