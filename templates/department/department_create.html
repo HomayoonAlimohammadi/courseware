@@ -1,6 +1,6 @@
 {% extends 'layout.html' %} 
 
-{% load static %} 
+{% load crispy_forms_tags %} 
 
 
 {% block head %} 
@@ -11,7 +11,8 @@
 <h2>Create Department</h2>
 <form action="{% url 'core:department_create' %}" method="post">
     {% csrf_token %} 
-    {{ form.as_p }} 
+    {{ form|crispy }} 
+    <br/>
     <button type="submit">Create</button>
     <a href="{% url 'core:index' %}">
         <button type="button">Back to Homepage</button>

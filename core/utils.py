@@ -8,9 +8,19 @@ from django.core.mail import send_mail
 from django.conf import settings
 from uuid import uuid4
 import core.models as models
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.conf import settings
+from django.core.mail import send_mail, BadHeaderError
 
 
 class ContactSupportException(Exception):
+    pass
+
+
+class PasswordResetEmailException(Exception):
     pass
 
 
@@ -103,6 +113,35 @@ def send_email_to_support(
         raise ContactSupportException
 
 
+def send_password_reset_email(request, user):
+    subject = "Password Reset Requested"
+    email_template = "password/reset_email.txt"
+    if request.is_secure():
+        protocol = "https://"
+    else:
+        protocol = "http://"
+    content_map = {
+        "username": user.username,
+        "email": user.email,
+        "domain": request.get_host(),
+        "site_name": "Courseware",
+        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+        "user": user,
+        "token": default_token_generator.make_token(user),
+        "protocol": protocol,
+    }
+    email_text = render_to_string(email_template, content_map)
+    try:
+        send_mail(
+            subject=subject,
+            message=email_text,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[user.email],
+        )
+    except BadHeaderError:
+        raise PasswordResetEmailException
+
+
 def uuid_namer(instance, file_name: str) -> str:
     name, ext = file_name.split(".")
     return f"{name}_{str(uuid4())}.{ext}"
@@ -113,6 +152,8 @@ def interval_has_overlap(
 ) -> bool:
     """Returns `True` if the `new_interval` overlaps with current `intervals` of the `teacher`. If not, returns `False`."""
     for interval in intervals:
+        if interval.day != new_interval.day:
+            continue
         # ref:  (   )
         # new:    (     )
         if (

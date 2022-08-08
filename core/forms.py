@@ -82,22 +82,14 @@ class ContactUsForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea(), required=False)
 
 
-class CourseCreateForm(forms.ModelForm):
+class CourseCreateForm(forms.Form):
+    name = forms.CharField(max_length=128)
+    teacher = forms.ModelChoiceField(queryset=User.objects.filter(is_staff=True))
+    department = forms.ModelChoiceField(queryset=Department.objects.all())
+    course_number = forms.IntegerField()
+    group_number = forms.IntegerField()
     start_time = forms.TimeField(help_text="Example: 10:00")
     end_time = forms.TimeField(help_text="Example: 12:00")
-
-    class Meta:
-        model = Course
-        exclude = ["user", "first_day", "second_day", "participants"]
-
-    def clean(self):
-        cleaned_data = super(CourseCreateForm, self).clean()
-        start_time = cleaned_data.get("start_time")  # type: ignore
-        end_time = cleaned_data.get("end_time")  # type: ignore
-        if not start_time or not end_time:
-            raise forms.ValidationError("Invalid time formats.")
-        if start_time >= end_time:  # type: ignore
-            raise forms.ValidationError("Course should start before it ends!")
 
 
 class CourseUpdateForm(forms.ModelForm):

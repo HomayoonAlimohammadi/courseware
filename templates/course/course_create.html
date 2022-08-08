@@ -1,6 +1,6 @@
 {% extends 'layout.html' %} 
 
-{% load static %} 
+{% load crispy_forms_tags %} 
 
 
 {% block head %} 
@@ -11,7 +11,7 @@
 <h2>Create Course:</h2>
 <form action="{% url 'core:course_create' %}" method="post">
     {% csrf_token %} 
-    {{ form.as_p }} 
+    {{ form|crispy }} 
     First Day: <select name="first_day">
         <option>Monday</option>
         <option>Tuesday</option>

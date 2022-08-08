@@ -123,7 +123,7 @@
     <ul>
         {% for interval in user.intervals.all %} 
             <li>
-                From: {{ interval.start_time }} To: {{ interval.end_time }} | Capacity: {{ interval.capacity }} | Reserved: {{ interval.reserving_students.count }} 
+                {{ interval.day }} | From: {{ interval.start_time }} To: {{ interval.end_time }} | Capacity: {{ interval.capacity }} | Reserved: {{ interval.reserving_students.count }} 
 
                 {% if not request.user.is_staff %} 
                 <a href="{% url 'core:user_interval_reserve' username=user.username pk=interval.pk %}">

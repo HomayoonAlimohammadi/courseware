@@ -1,13 +1,18 @@
 from django.urls import path
 from core import views
 
-
 app_name = "core"
 
 handler404 = "core.views.handle_404_view"
 
+
 urlpatterns = [
     path("", views.index_view, name="index"),
+    path(
+        "passwords/reset/",
+        views.password_reset_request_view,
+        name="password_reset_request",
+    ),
     path("support/", views.contact_us_view, name="contact_us"),
     path("users/", views.user_list_view, name="user_list"),
     path("users/create", views.user_create_view, name="user_create"),

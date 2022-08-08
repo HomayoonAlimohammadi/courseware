@@ -1,38 +1,59 @@
 from __future__ import annotations
-from webbrowser import get
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
-from core.forms import (
-    ContactUsForm,
-    DepartmentCreateForm,
-    DepartmentUpdateForm,
-    IntervalCreateForm,
-    IntervalUpdateForm,
-    UserCreateForm,
-    UserLoginForm,
-    UserUpdateForm,
-    CourseCreateForm,
-    CourseUpdateForm,
-)
+from core.forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from core.utils import (
+    PasswordResetEmailException,
     send_email_to_support,
-    ContactSupportException,
+    send_password_reset_email,
     interval_has_overlap,
+    ContactSupportException,
 )
 from core.models import Course, Department, Interval, User
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import PasswordResetForm
 
 
 def handle_404_view(request, exception: Exception):
     print(exception)
     return render(request, "404.html")
+
+
+def password_reset_request_view(request):
+    form = PasswordResetForm(request.POST or None)
+    context = {"form": form}
+    if request.method == "POST":
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "No user existed with the given email address.",
+                )
+                return redirect("core:password_reset_request")
+            try:
+                send_password_reset_email(request=request, user=user)
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    "Email was sent successfully. Check out your email.",
+                )
+                return redirect("password_reset_email_sent")
+            except PasswordResetEmailException as e:
+                print(e)  # TODO: use logging.
+                messages.add_message(
+                    request, messages.ERROR, "Error sending the email."
+                )
+    return render(request, "password/reset_request.html", context=context)
 
 
 @require_http_methods(["GET"])
@@ -461,6 +482,7 @@ def user_interval_create_view(request, username: str):
             messages.add_message(
                 request, messages.SUCCESS, "Interval was added successfully."
             )
+            return redirect("core:user_details", username=username)
         else:
             messages.add_message(request, messages.ERROR, form.errors.as_text())
             return redirect("core:user_interval_create", username=username)
@@ -550,7 +572,7 @@ def user_interval_delete_view(request, username: str, pk: int):
         messages.add_message(
             request, messages.SUCCESS, "Interval was deleted successfully."
         )
-        return redirect("core:use_details", username=username)
+        return redirect("core:user_details", username=username)
 
     return render(request, "interval/interval_delete.html", context=context)
 
