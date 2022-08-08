@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from core.utils import uuid_namer
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from notifications.signals import notify
 
 
 class User(AbstractUser):
@@ -142,3 +143,17 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
         print(e.__class__)
         print(e)
         pass
+
+
+@receiver(
+    models.signals.pre_delete, sender=Interval, dispatch_uid="interval_delete_signal"
+)
+def notify_reserving_student_on_interval_delete(sender, instance, *args, **kwargs):
+    description = f"Teacher {instance.teacher.username} deleted Interval on {instance}"
+    for student in instance.reserving_students.all():
+        notify.send(
+            instance.teacher, recipient=student, verb="Message", description=description
+        )
+        print()
+        print(f"sent notification to {student.username}")
+        print()

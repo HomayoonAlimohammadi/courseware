@@ -18,6 +18,7 @@ from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import PasswordResetForm
+from notifications.signals import notify
 
 
 def handle_404_view(request, exception: Exception):

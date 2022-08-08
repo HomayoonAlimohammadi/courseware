@@ -14,10 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+import notifications.urls
 
 
 password_reset_email_sent_view = auth_views.PasswordResetDoneView.as_view(
@@ -50,6 +51,10 @@ urlpatterns = (
             "passwords/reset/complete",
             password_reset_complete_view,
             name="password_reset_complete",
+        ),
+        re_path(
+            "^inbox/notifications/",
+            include(notifications.urls, namespace="notifications"),
         ),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -25,9 +25,19 @@
         <div class="alert {{ message.tags }} alert-dismissible" role="alert">
           {{ message }}
         </div>
-
       </div>
       {% endfor %}
+      {% if request.user.is_authenticated %} 
+        {% for notification in request.user.notifications.unread %}
+          <div id="notifications" class="container-fluid p-0">
+            <div class="alert alert-info alert-dismissible" role="alert">
+              Message from {{ notification.actor }}:<br/>
+              {{ notification.description }}
+              {{ notification.mark_as_read }}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
       <div id="user-hello">
         {% if request.user.is_authenticated %}
         <b>Hello {{ request.user.username|title }},</b><br />

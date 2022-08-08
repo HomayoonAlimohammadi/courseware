@@ -2,7 +2,6 @@ from __future__ import annotations
 import json
 import smtplib
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
 from django.core.mail import send_mail
 from django.conf import settings
