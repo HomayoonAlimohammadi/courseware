@@ -14,6 +14,7 @@ urlpatterns = [
     path("users/login", views.user_login_view, name="user_login"),
     path("users/logout", views.user_logout_view, name="user_logout"),
     path("users/<str:username>", views.user_details_view, name="user_details"),
+    path("users/<str:username>/delete", views.user_delete_view, name="user_delete"),
     path("users/<str:username>/update", views.user_update_view, name="user_update"),
     path(
         "users/<str:username>/intervals/create",

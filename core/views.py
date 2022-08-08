@@ -213,6 +213,27 @@ def user_update_view(request, username: str):
 
 @login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
 @require_http_methods(["GET", "POST"])
+def user_delete_view(request, username: str):
+    user = get_object_or_404(User, username=username)
+    context = {"user": user}
+    if user != request.user:
+        messages.add_message(
+            request, messages.ERROR, "You can only delete your own account!"
+        )
+        return redirect("core:index")
+    if request.method == "POST":
+        user.delete()
+        logout(request)
+        messages.add_message(
+            request, messages.SUCCESS, f"User `{username}` was deleted successfully."
+        )
+        return redirect("core:index")
+
+    return render(request, "user/user_delete.html", context=context)
+
+
+@login_required(login_url=reverse_lazy("core:user_login"))  # type: ignore
+@require_http_methods(["GET", "POST"])
 def course_create_view(request):
     if not request.user.is_superuser:
         messages.add_message(request, messages.ERROR, "Only Admins can create Courses.")

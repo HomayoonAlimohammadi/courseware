@@ -1,0 +1,22 @@
+{% extends 'layout.html' %} 
+{% load static %} 
+
+
+{% block head %} 
+<title>Delete Account</title>
+{% endblock %} 
+
+
+{% block body %} 
+<h3>Delete User:</h3>
+<br/>
+<form action="{% url 'core:user_delete' user.username %}" method="post">
+    {% csrf_token %}
+    <h4>Are you sure that you are going to <b>DELETE</b> your account and all it's information <b>FOREVER</b>?</h4>
+    <br/>
+    <a href="{% url 'core:index' %}">
+        <button type="button">No! Take me back!</button>
+    </a>
+    <button type="submit">Yes, Delete my Account</button>
+</form>
+{% endblock %} 
